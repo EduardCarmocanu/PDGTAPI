@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28307.572
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PDGTAPI", "PDGTAPI\PDGTAPI.csproj", "{DD17329D-65F0-452A-80DB-4D8E4526C7CA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{147C6B3B-60B4-4266-AAB5-62F8986BD8CD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{DD17329D-65F0-452A-80DB-4D8E4526C7CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DD17329D-65F0-452A-80DB-4D8E4526C7CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DD17329D-65F0-452A-80DB-4D8E4526C7CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{147C6B3B-60B4-4266-AAB5-62F8986BD8CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{147C6B3B-60B4-4266-AAB5-62F8986BD8CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{147C6B3B-60B4-4266-AAB5-62F8986BD8CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{147C6B3B-60B4-4266-AAB5-62F8986BD8CD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
