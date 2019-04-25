@@ -49,7 +49,7 @@ namespace PDGTAPI
 			{
 				app.UseHsts();
 			}
-			app.UseCors();
+			app.UseCors("DefaultPolicy");
 			app.UseHttpsRedirection();
 			app.UseMvc();
 		}
