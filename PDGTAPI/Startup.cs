@@ -97,7 +97,7 @@ namespace PDGTAPI
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-		public void Configure(IApplicationBuilder app, IHostingEnvironment env, ApplicationDataContext DataContext)
+		public void Configure(IApplicationBuilder app, IHostingEnvironment env, ApplicationDataContext DataContext, IServiceProvider serviceProvider)
 		{
 			if (env.IsDevelopment())
 			{
@@ -110,6 +110,7 @@ namespace PDGTAPI
 			app.UseCors("DefaultPolicy");
 			DataContext.Database.EnsureCreated();
 			app.UseAuthentication();
+			new DataSeeder(serviceProvider.GetRequiredService<RoleManager<IdentityRole>>()).Seed();
 			app.UseHttpsRedirection();
 			app.UseMvc();
 		}
