@@ -23,17 +23,21 @@ namespace PDGTAPI
 {
 	public class Startup
 	{
-		public Startup(IConfiguration configuration)
+		public Startup(IConfiguration configuration, IRedCapService redCapService)
 		{
 			Configuration = configuration;
+			RedCapService = redCapService;
 		}
 
 		public IConfiguration Configuration { get; }
+		public IRedCapService RedCapService { get; set; }
 
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddSingleton(Configuration);
+			services.AddSingleton(RedCapService);
+
 			services.AddCors(options =>
 			{
 				options.AddPolicy("DefaultPolicy", policy =>
