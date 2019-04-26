@@ -36,10 +36,10 @@ namespace PDGTAPI.Controllers
 			ILogger<AccountsController> logger
 		)
 		{
-			this._userManager = userManager;
-			this._signInManager = signInManager;
-			this._configuration = configuration;
-			this._logger = logger;
+			_userManager = userManager;
+			_signInManager = signInManager;
+			_configuration = configuration;
+			_logger = logger;
 		}
 
 		[HttpPost]
@@ -76,7 +76,6 @@ namespace PDGTAPI.Controllers
 				RedCapGroup = model.RedCapGroup,
 				RedCapRecordId = model.RedCapRecordId
 			};
-
 			var identityResult = await this._userManager.CreateAsync(user, model.Password);
 
 			if (identityResult.Succeeded) return Ok(GetToken(user));
