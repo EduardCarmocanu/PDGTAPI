@@ -18,25 +18,26 @@ using Microsoft.IdentityModel.Tokens;
 using PDGTAPI.Data;
 using PDGTAPI.Data.Entities;
 using PDGTAPI.Services;
+using RestSharp;
 
 namespace PDGTAPI
 {
 	public class Startup
 	{
-		public Startup(IConfiguration configuration, IRedCapService redCapService)
+		public Startup(IConfiguration configuration)
 		{
 			Configuration = configuration;
-			RedCapService = redCapService;
 		}
 
 		public IConfiguration Configuration { get; }
-		public IRedCapService RedCapService { get; set; }
 
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddSingleton(Configuration);
-			services.AddSingleton(RedCapService);
+
+			services.AddTransient<IRedCapService, RedCapService>();
+			services.AddTransient<IRestClient, RestClient>();
 
 			services.AddCors(options =>
 			{
