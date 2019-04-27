@@ -31,7 +31,7 @@ namespace PDGTAPI.Services
 		public bool RecordExists(int RecordId)
 		{
 			if (RecordId == 0)
-				throw new ArgumentNullException("RecordId must be > 0");
+				throw new ArgumentException("RecordId must be > 0");
 
 			RestRequest request = new RestRequest(Method.POST);
 
@@ -82,10 +82,11 @@ namespace PDGTAPI.Services
 
 			IRestResponse response = _restClient.Execute(request);
 
-			char group;
+			dynamic group;
 			try
 			{
-				group = (char)JsonConvert.DeserializeObject<object[]>(response.Content)[0];
+				group = JsonConvert.DeserializeObject<dynamic>(response.Content)[0]["randomisation_group"].Value;
+				group = (char?)group[0];
 			}
 			catch (Exception)
 			{
