@@ -21,7 +21,7 @@ namespace PDGTAPI.Controllers
     [Route("api/[controller]")]
     [ApiController]
 	[Produces("application/json")]
-	[AllowAnonymous]
+	[Authorize(Policy = "Doctors")]
     public class AccountsController : ControllerBase
     {
 		private readonly IUsersService _usersService;
@@ -33,6 +33,7 @@ namespace PDGTAPI.Controllers
 
 		[HttpPost]
 		[Route("authenticate")]
+		[AllowAnonymous]
 		public async Task<IActionResult> AuthenticateAsync([FromBody] UserLoginDTO model)
 		{
 			if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -46,6 +47,7 @@ namespace PDGTAPI.Controllers
 
 		[HttpPost]
 		[Route("registerdoctor")]
+		[Authorize(Policy = "Administrators")]
 		public async Task<IActionResult> RegisterDoctorAsync([FromBody] DoctorRegistrationDTO model)
 		{
 			if (!ModelState.IsValid) return BadRequest(ModelState);

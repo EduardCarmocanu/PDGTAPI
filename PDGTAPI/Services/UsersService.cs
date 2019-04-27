@@ -21,7 +21,7 @@ namespace PDGTAPI.Services
 		Task<string> RegisterPatientAsync(PatientRegistrationDTO model);
 		Task<string> RegisterDoctorAsync(DoctorRegistrationDTO model);
 	}
-
+	
 	public class UsersService : IUsersService
 	{
 		private readonly UserManager<UserEntity> _userManager;
