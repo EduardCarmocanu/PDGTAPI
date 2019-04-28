@@ -12,103 +12,66 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using PDGTAPI.Data.Entities;
-using PDGTAPI.DTOs;
+using PDGTAPI.Models.Entities;
+using PDGTAPI.Services;
+using PDGTAPI.Models;
+using PDGTAPI.Helpers;
 
 namespace PDGTAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
 	[Produces("application/json")]
-	[AllowAnonymous]
+	[Authorize(Policy = "Doctors")]
     public class AccountsController : ControllerBase
     {
-		private readonly UserManager<UserEntity> _userManager;
-		private readonly SignInManager<UserEntity> _signInManager;
-		private readonly IConfiguration _configuration;
-		private readonly ILogger<AccountsController> _logger;
+		private readonly IUsersService _usersService;
 
-		public AccountsController
-		(
-			UserManager<UserEntity> userManager,
-			SignInManager<UserEntity> signInManager,
-			IConfiguration configuration,
-			ILogger<AccountsController> logger
-		)
+		public AccountsController(IUsersService usersService)
 		{
-			_userManager = userManager;
-			_signInManager = signInManager;
-			_configuration = configuration;
-			_logger = logger;
+			_usersService = usersService;
 		}
 
 		[HttpPost]
 		[Route("authenticate")]
-		public async Task<IActionResult> Authenticate([FromBody] UserLoginDTO model)
+		[AllowAnonymous]
+		public async Task<IActionResult> AuthenticateAsync([FromBody] UserLoginModel model)
 		{
 			if (!ModelState.IsValid) return BadRequest(ModelState);
 
-			var loginResult = await _signInManager.PasswordSignInAsync(
-				model.Email,
-				model.Password,
-				isPersistent: false,
-				lockoutOnFailure: false
-			);
+			ServiceResult<string> authenticationResult = await _usersService.AuthenticateAsync(model);
+			if (!authenticationResult.Succeded)
+				return BadRequest(authenticationResult.ErrorMessage);
 
-			if (!loginResult.Succeeded) return BadRequest();
-
-			UserEntity user = await _userManager.FindByEmailAsync(model.Email);
-			return Ok(GetToken(user));
+			return Ok(authenticationResult);
 		}
 
 		[HttpPost]
-		[Route("register")]	
-		public async Task<IActionResult> Register(UserRegistrationDTO model)
+		[Route("registerdoctor")]
+		[Authorize(Policy = "Administrators")]
+		public async Task<IActionResult> RegisterDoctorAsync([FromBody] DoctorRegistrationModel model)
 		{
 			if (!ModelState.IsValid) return BadRequest(ModelState);
 
-			UserEntity user = new UserEntity
-			{
-				UserName = model.Email,
-				Email = model.Email,
-				FirstName = model.FirstName,
-				LastName = model.LastName,
-				RedCapGroup = model.RedCapGroup,
-				RedCapRecordId = model.RedCapRecordId
-			};
-			var identityResult = await this._userManager.CreateAsync(user, model.Password);
+			ServiceResult<string> registrationResult = await _usersService.RegisterDoctorAsync(model);
+			if (!registrationResult.Succeded)
+				return BadRequest(registrationResult.ErrorMessage);
 
-			if (identityResult.Succeeded) return Ok(GetToken(user));
-
-			return BadRequest(identityResult);
+			return Ok(registrationResult);
 		}
 
-		private string GetToken(UserEntity user)
+		[HttpPost]
+		[Route("registerpatient")]
+		[Authorize(Policy = "Doctors")]
+		public async Task<IActionResult> RegisterPatientAsync([FromBody] PatientRegistrationModel model)
 		{
-			var utcNow = DateTime.UtcNow;
+			if (!ModelState.IsValid) return BadRequest(ModelState);
 
-			Claim[] claims = new Claim[]
-			{
-				new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-				new Claim(JwtRegisteredClaimNames.UniqueName, user.UserName),
-				new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-				new Claim(JwtRegisteredClaimNames.Iat, utcNow.ToString())
-			};
+			ServiceResult<string> registrationResult = await _usersService.RegisterPatientAsync(model);
+			if (!registrationResult.Succeded)
+				return BadRequest(registrationResult.ErrorMessage);
 
-			SymmetricSecurityKey signingKey = new SymmetricSecurityKey(
-				Encoding.UTF8.GetBytes(this._configuration["Security:JWT:Key"])
-			);
-			SigningCredentials signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
-			JwtSecurityToken jwt = new JwtSecurityToken(
-				signingCredentials: signingCredentials,
-				claims: claims,
-				notBefore: utcNow,
-				expires: utcNow.AddSeconds(this._configuration.GetValue<int>("Security:JWT:LifeTime")),
-				audience: this._configuration["Security:JWT:Audience"],
-				issuer: this._configuration["Security:JWT:Issuer"]
-			);
-
-			return new JwtSecurityTokenHandler().WriteToken(jwt);
+			return Ok(registrationResult);
 		}
 	}
 }

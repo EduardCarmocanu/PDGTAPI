@@ -16,7 +16,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using PDGTAPI.Data;
-using PDGTAPI.Data.Entities;
+using PDGTAPI.Models.Entities;
 using PDGTAPI.Services;
 using RestSharp;
 
@@ -38,6 +38,7 @@ namespace PDGTAPI
 
 			services.AddTransient<IRedCapService, RedCapService>();
 			services.AddTransient<IRestClient, RestClient>();
+			services.AddTransient<IUsersService, UsersService>();
 
 			services.AddCors(options =>
 			{
@@ -48,7 +49,6 @@ namespace PDGTAPI
 					policy.AllowAnyOrigin();
 				});
 			});
-
 			services.AddDbContext<ApplicationDataContext>(options =>
 			{
 				options.UseSqlServer(Configuration.GetConnectionString("DefaultConnectionString"));

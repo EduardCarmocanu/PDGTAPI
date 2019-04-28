@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PDGTAPI.Data.Entities
+namespace PDGTAPI.Models.Entities
 {
 	public class UserEntity : IdentityUser
 	{
