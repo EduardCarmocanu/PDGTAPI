@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using PDGTAPI.Models.Entities;
-using PDGTAPI.DTOs;
 using PDGTAPI.Helpers;
 using System;
 using System.Collections.Generic;
@@ -12,14 +11,15 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using PDGTAPI.Models;
 
 namespace PDGTAPI.Services
 {
 	public interface IUsersService
 	{
-		Task<string> AuthenticateAsync(UserLoginDTO model);
-		Task<string> RegisterPatientAsync(PatientRegistrationDTO model);
-		Task<string> RegisterDoctorAsync(DoctorRegistrationDTO model);
+		Task<ServiceResult<string>> AuthenticateAsync(UserLoginModel model);
+		Task<ServiceResult<string>> RegisterPatientAsync(PatientRegistrationModel model);
+		Task<ServiceResult<string>> RegisterDoctorAsync(DoctorRegistrationModel model);
 	}
 	
 	public class UsersService : IUsersService
@@ -30,7 +30,7 @@ namespace PDGTAPI.Services
 		private readonly IRedCapService _redCapService;
 
 		public UsersService
-		(
+	(
 			UserManager<UserEntity> userManager,
 			SignInManager<UserEntity> signInManager,
 			IConfiguration configuration,
@@ -43,10 +43,12 @@ namespace PDGTAPI.Services
 			_redCapService = redCapService;
 		}
 
-		public async Task<string> AuthenticateAsync(UserLoginDTO model)
+		public async Task<ServiceResult<string>> AuthenticateAsync(UserLoginModel model)
 		{
 			if (model == null)
 				throw new ArgumentNullException();
+
+			ServiceResult<string> result = new ServiceResult<string>();
 
 			var loginResult = await _signInManager.PasswordSignInAsync(
 				model.Email,
@@ -55,16 +57,25 @@ namespace PDGTAPI.Services
 				lockoutOnFailure: false
 			);
 
-			if (!loginResult.Succeeded) return null;
+			if (!loginResult.Succeeded)
+			{
+				result.ErrorMessage = "Could not Authenticate user";
+				return result;
+			}
 
 			UserEntity user = await _userManager.FindByEmailAsync(model.Email);
-			return GetToken(user);
+			result.Content = GetToken(user);
+			result.Succeded = true;
+
+			return result;
 		}
 
-		public async Task<string> RegisterDoctorAsync(DoctorRegistrationDTO model)
+		public async Task<ServiceResult<string>> RegisterDoctorAsync(DoctorRegistrationModel model)
 		{
 			if (model == null)
 				throw new ArgumentNullException();
+
+			ServiceResult<string> result = new ServiceResult<string>();
 
 			UserEntity user = new UserEntity
 			{
@@ -73,28 +84,55 @@ namespace PDGTAPI.Services
 				FirstName = model.FirstName,
 				LastName = model.LastName
 			};
-			var identityResult = await _userManager.CreateAsync(user, model.Password);
 
+			var identityResult = await _userManager.CreateAsync(user, model.Password);
 			if (identityResult.Succeeded)
 			{
 				await _userManager.AddToRoleAsync(user, Roles.Doctor);
-				return GetToken(user);
+				result.Content = GetToken(user);
+				result.Succeded = true;
+
+				return result;
 			}
 
-			return null;
+			result.ErrorMessage = "Could not register Doctor";
+			return result;
 		}
 
-		public async Task<string> RegisterPatientAsync(PatientRegistrationDTO model)
+		public async Task<ServiceResult<string>> RegisterPatientAsync(PatientRegistrationModel model)
 		{
 			if (model == null)
 				throw new ArgumentNullException();
 
-			if (!_redCapService.RecordExists(model.RedCapRecordId))
-				return null;
+			ServiceResult<string> result = new ServiceResult<string>();
 
-			char? PatientGroup = _redCapService.GetRecordGroup(model.RedCapRecordId);
-			if (PatientGroup == null)
-				return null;
+			if (_userManager.Users.Any(x => x.RedCapRecordId == model.RedCapRecordId))
+			{
+				result.ErrorMessage = 
+					"A patient with RedCapRecordId: " 
+					+ model.RedCapRecordId.ToString() 
+					+ ", Already exists in the databse";
+				return result;
+			}
+
+			ServiceResult<bool> recordExistsResult = _redCapService.RecordExists(model.RedCapRecordId);
+			if (!recordExistsResult.Succeded)
+			{
+				result.ErrorMessage = recordExistsResult.ErrorMessage;
+				return result;
+			}
+			if (!recordExistsResult.Content)
+			{
+				result.ErrorMessage = "Could not find patient record in RedCap database";
+				return result;
+			}
+
+			ServiceResult<char> patientGroupResult = _redCapService.GetRecordGroup(model.RedCapRecordId);
+			if (!patientGroupResult.Succeded)
+			{
+				result.ErrorMessage = patientGroupResult.ErrorMessage;
+				return result;
+			}
 
 			UserEntity user = new UserEntity
 			{
@@ -103,17 +141,21 @@ namespace PDGTAPI.Services
 				FirstName = model.FirstName,
 				LastName = model.LastName,
 				RedCapRecordId = model.RedCapRecordId,
-				RedCapGroup = PatientGroup
+				RedCapGroup = patientGroupResult.Content
 			};
-			var identityResult = await _userManager.CreateAsync(user, model.Password);
 
+			var identityResult = await _userManager.CreateAsync(user, model.Password);
 			if (identityResult.Succeeded)
 			{
 				await _userManager.AddToRoleAsync(user, Roles.Patient);
-				return GetToken(user);
+				result.Succeded = true;
+				result.Content = GetToken(user);
+
+				return result;
 			}
 
-			return null;
+			result.ErrorMessage = "Could not register patient";
+			return result;
 		}
 
 		private string GetToken(UserEntity TokenUser)
