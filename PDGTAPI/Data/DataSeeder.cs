@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using PDGTAPI.Data.Entities;
+using PDGTAPI.Models.Entities;
 using System;
 using System.Collections;
 using System.Collections.Generic;

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using PDGTAPI.Data.Entities;
+using PDGTAPI.Models.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
