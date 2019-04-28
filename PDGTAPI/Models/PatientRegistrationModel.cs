@@ -4,9 +4,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PDGTAPI.DTOs
+namespace PDGTAPI.Models
 {
-	public class DoctorRegistrationDTO
+	public class PatientRegistrationModel
 	{
 		[Required]
 		[StringLength(64, ErrorMessage = "First Name should be at least 2 characters and maximum 64 characters", MinimumLength = 2)]
@@ -20,5 +20,7 @@ namespace PDGTAPI.DTOs
 		[Required]
 		[DataType(DataType.Password)]
 		public string Password { get; set; }
+		[Required]
+		public int RedCapRecordId { get; set; }
 	}
 }

@@ -4,9 +4,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PDGTAPI.DTOs
+namespace PDGTAPI.Models
 {
-	public class UserLoginDTO
+	public class UserLoginModel
 	{
 		[Required]
 		[DataType(DataType.EmailAddress)]
