@@ -13,8 +13,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using PDGTAPI.Models.Entities;
-using PDGTAPI.DTOs;
 using PDGTAPI.Services;
+using PDGTAPI.Models;
+using PDGTAPI.Helpers;
 
 namespace PDGTAPI.Controllers
 {
@@ -34,42 +35,43 @@ namespace PDGTAPI.Controllers
 		[HttpPost]
 		[Route("authenticate")]
 		[AllowAnonymous]
-		public async Task<IActionResult> AuthenticateAsync([FromBody] UserLoginDTO model)
+		public async Task<IActionResult> AuthenticateAsync([FromBody] UserLoginModel model)
 		{
 			if (!ModelState.IsValid) return BadRequest(ModelState);
 
-			string AuthenticationResult = await _usersService.AuthenticateAsync(model);
-			if (AuthenticationResult == null)
-				return BadRequest("Wrong Username or Password");
+			ServiceResult<string> authenticationResult = await _usersService.AuthenticateAsync(model);
+			if (!authenticationResult.Succeded)
+				return BadRequest(authenticationResult.ErrorMessage);
 
-			return Ok(AuthenticationResult);
+			return Ok(authenticationResult);
 		}
 
 		[HttpPost]
 		[Route("registerdoctor")]
 		[Authorize(Policy = "Administrators")]
-		public async Task<IActionResult> RegisterDoctorAsync([FromBody] DoctorRegistrationDTO model)
+		public async Task<IActionResult> RegisterDoctorAsync([FromBody] DoctorRegistrationModel model)
 		{
 			if (!ModelState.IsValid) return BadRequest(ModelState);
 
-			string DoctorRegistrationResult = await _usersService.RegisterDoctorAsync(model);
-			if (DoctorRegistrationResult == null)
-				return BadRequest("Could not register user");
+			ServiceResult<string> registrationResult = await _usersService.RegisterDoctorAsync(model);
+			if (!registrationResult.Succeded)
+				return BadRequest(registrationResult.ErrorMessage);
 
-			return Ok(DoctorRegistrationResult);
+			return Ok(registrationResult);
 		}
 
 		[HttpPost]
 		[Route("registerpatient")]
-		public async Task<IActionResult> RegisterPatientAsync([FromBody] PatientRegistrationDTO model)
+		[Authorize(Policy = "Doctors")]
+		public async Task<IActionResult> RegisterPatientAsync([FromBody] PatientRegistrationModel model)
 		{
 			if (!ModelState.IsValid) return BadRequest(ModelState);
 
-			string PatientRegistrationResult = await _usersService.RegisterPatientAsync(model);
-			if (PatientRegistrationResult == null)
-				return BadRequest("Could not register user");
+			ServiceResult<string> registrationResult = await _usersService.RegisterPatientAsync(model);
+			if (!registrationResult.Succeded)
+				return BadRequest(registrationResult.ErrorMessage);
 
-			return Ok(PatientRegistrationResult);
+			return Ok(registrationResult);
 		}
 	}
 }
