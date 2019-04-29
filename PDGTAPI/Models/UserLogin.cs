@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PDGTAPI.Models
 {
-	public class UserLoginModel
+	public class UserLogin
 	{
 		[Required]
 		[DataType(DataType.EmailAddress)]

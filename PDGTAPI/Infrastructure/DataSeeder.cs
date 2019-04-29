@@ -1,20 +1,17 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using PDGTAPI.Models.Entities;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PDGTAPI.Data
+namespace PDGTAPI.Infrastructure
 {
 	public class DataSeeder
 	{
 		private readonly RoleManager<IdentityRole> _roleManager;
 
-		public DataSeeder(
-			RoleManager<IdentityRole> roleManager
-		)
+		public DataSeeder(RoleManager<IdentityRole> roleManager)
 		{
 			_roleManager = roleManager;
 		}

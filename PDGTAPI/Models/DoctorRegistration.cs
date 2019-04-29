@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PDGTAPI.Models
 {
-	public class DoctorRegistrationModel
+	public class DoctorRegistration
 	{
 		[Required]
 		[StringLength(64, ErrorMessage = "First Name should be at least 2 characters and maximum 64 characters", MinimumLength = 2)]

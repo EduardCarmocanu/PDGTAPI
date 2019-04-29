@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using PDGTAPI.Models.Entities;
 using PDGTAPI.Services;
 using PDGTAPI.Models;
 using PDGTAPI.Helpers;
@@ -35,7 +34,7 @@ namespace PDGTAPI.Controllers
 		[HttpPost]
 		[Route("authenticate")]
 		[AllowAnonymous]
-		public async Task<IActionResult> AuthenticateAsync([FromBody] UserLoginModel model)
+		public async Task<IActionResult> AuthenticateAsync([FromBody] UserLogin model)
 		{
 			if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -49,7 +48,7 @@ namespace PDGTAPI.Controllers
 		[HttpPost]
 		[Route("registerdoctor")]
 		[Authorize(Policy = "Administrators")]
-		public async Task<IActionResult> RegisterDoctorAsync([FromBody] DoctorRegistrationModel model)
+		public async Task<IActionResult> RegisterDoctorAsync([FromBody] DoctorRegistration model)
 		{
 			if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -63,7 +62,7 @@ namespace PDGTAPI.Controllers
 		[HttpPost]
 		[Route("registerpatient")]
 		[Authorize(Policy = "Doctors")]
-		public async Task<IActionResult> RegisterPatientAsync([FromBody] PatientRegistrationModel model)
+		public async Task<IActionResult> RegisterPatientAsync([FromBody] PatientRegistration model)
 		{
 			if (!ModelState.IsValid) return BadRequest(ModelState);
 
