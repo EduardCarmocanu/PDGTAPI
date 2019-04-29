@@ -24,15 +24,15 @@ namespace PDGTAPI.Services
 	
 	public class UsersService : IUsersService
 	{
-		private readonly UserManager<UserEntity> _userManager;
-		private readonly SignInManager<UserEntity> _signInManager;
+		private readonly UserManager<User> _userManager;
+		private readonly SignInManager<User> _signInManager;
 		private readonly IConfiguration _configuration;
 		private readonly IRedCapService _redCapService;
 
 		public UsersService
 	(
-			UserManager<UserEntity> userManager,
-			SignInManager<UserEntity> signInManager,
+			UserManager<User> userManager,
+			SignInManager<User> signInManager,
 			IConfiguration configuration,
 			IRedCapService redCapService
 		)
@@ -63,7 +63,7 @@ namespace PDGTAPI.Services
 				return result;
 			}
 
-			UserEntity user = await _userManager.FindByEmailAsync(model.Email);
+			User user = await _userManager.FindByEmailAsync(model.Email);
 			result.Content = GetToken(user);
 			result.Succeded = true;
 
@@ -77,7 +77,7 @@ namespace PDGTAPI.Services
 
 			ServiceResult<string> result = new ServiceResult<string>();
 
-			UserEntity user = new UserEntity
+			User user = new User
 			{
 				UserName = model.Email,
 				Email = model.Email,
@@ -134,7 +134,7 @@ namespace PDGTAPI.Services
 				return result;
 			}
 
-			UserEntity user = new UserEntity
+			User user = new User
 			{
 				UserName = model.Email,
 				Email = model.Email,
@@ -158,7 +158,7 @@ namespace PDGTAPI.Services
 			return result;
 		}
 
-		private string GetToken(UserEntity TokenUser)
+		private string GetToken(User TokenUser)
 		{
 			var utcNow = DateTime.UtcNow;
 
