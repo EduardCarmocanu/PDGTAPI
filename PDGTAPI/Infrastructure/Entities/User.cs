@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 namespace PDGTAPI.Infrastructure.Entities
 {
-	public class UserEntity : IdentityUser
+	public class User : IdentityUser
 	{
 		public string FirstName { get; set; }
 		public string LastName { get; set; }
 		public int? RedCapRecordId { get; set; }
 		public char? RedCapGroup { get; set; }
+		public DateTime RedCapBaseline { get; set; }
 	}
 }
