@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using PDGTAPI.Models.Entities;
 using PDGTAPI.Helpers;
 using System;
 using System.Collections.Generic;
@@ -12,14 +11,15 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using PDGTAPI.Models;
+using PDGTAPI.Infrastructure.Entities;
 
 namespace PDGTAPI.Services
 {
 	public interface IUsersService
 	{
-		Task<ServiceResult<string>> AuthenticateAsync(UserLoginModel model);
-		Task<ServiceResult<string>> RegisterPatientAsync(PatientRegistrationModel model);
-		Task<ServiceResult<string>> RegisterDoctorAsync(DoctorRegistrationModel model);
+		Task<ServiceResult<string>> AuthenticateAsync(UserLogin model);
+		Task<ServiceResult<string>> RegisterPatientAsync(PatientRegistration model);
+		Task<ServiceResult<string>> RegisterDoctorAsync(DoctorRegistration model);
 	}
 	
 	public class UsersService : IUsersService
@@ -43,7 +43,7 @@ namespace PDGTAPI.Services
 			_redCapService = redCapService;
 		}
 
-		public async Task<ServiceResult<string>> AuthenticateAsync(UserLoginModel model)
+		public async Task<ServiceResult<string>> AuthenticateAsync(UserLogin model)
 		{
 			if (model == null)
 				throw new ArgumentNullException();
@@ -70,7 +70,7 @@ namespace PDGTAPI.Services
 			return result;
 		}
 
-		public async Task<ServiceResult<string>> RegisterDoctorAsync(DoctorRegistrationModel model)
+		public async Task<ServiceResult<string>> RegisterDoctorAsync(DoctorRegistration model)
 		{
 			if (model == null)
 				throw new ArgumentNullException();
@@ -99,7 +99,7 @@ namespace PDGTAPI.Services
 			return result;
 		}
 
-		public async Task<ServiceResult<string>> RegisterPatientAsync(PatientRegistrationModel model)
+		public async Task<ServiceResult<string>> RegisterPatientAsync(PatientRegistration model)
 		{
 			if (model == null)
 				throw new ArgumentNullException();
