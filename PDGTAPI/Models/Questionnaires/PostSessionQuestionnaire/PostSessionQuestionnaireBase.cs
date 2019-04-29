@@ -1,5 +1,4 @@
-﻿using PDGTAPI.Models.Questionnaires.WeeklyQuestionnaire.Painkillers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
