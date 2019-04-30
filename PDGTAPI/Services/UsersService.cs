@@ -81,8 +81,6 @@ namespace PDGTAPI.Services
 			{
 				UserName = model.Email,
 				Email = model.Email,
-				FirstName = model.FirstName,
-				LastName = model.LastName
 			};
 
 			var identityResult = await _userManager.CreateAsync(user, model.Password);
@@ -138,8 +136,6 @@ namespace PDGTAPI.Services
 			{
 				UserName = model.Email,
 				Email = model.Email,
-				FirstName = model.FirstName,
-				LastName = model.LastName,
 				RedCapRecordId = model.RedCapRecordId,
 				RedCapGroup = patientGroupResult.Content
 			};
