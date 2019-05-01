@@ -12,6 +12,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20190501133955_RemoveRandomisationGroup.cs" />
+    <Compile Remove="Migrations\20190501133955_RemoveRandomisationGroup.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
