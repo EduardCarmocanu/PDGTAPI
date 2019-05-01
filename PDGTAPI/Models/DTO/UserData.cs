@@ -10,6 +10,6 @@ namespace PDGTAPI.Models.DTO
         [Required]
         public DateTime BaselineDate { get; set; }
         [Required]
-        public string RandomisationGroup { get; set; }
+        public char RandomisationGroup { get; set; }
     }
 }
