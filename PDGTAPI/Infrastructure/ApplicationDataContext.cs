@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PDGTAPI.Infrastructure.Entities;
+using PDGTAPI.Infrastructure.Entities.BindingTables;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +10,8 @@ using System.Threading.Tasks;
 
 namespace PDGTAPI.Infrastructure
 {
-	public class ApplicationDataContext : IdentityDbContext<UserEntity, IdentityRole, string>
+	public class ApplicationDataContext : IdentityDbContext<User, IdentityRole, string>
 	{
-		public ApplicationDataContext(DbContextOptions options) : base(options) { }
+		public ApplicationDataContext(DbContextOptions options) : base(options) { }	
 	}
 }
