@@ -14,9 +14,8 @@ namespace PDGTAPI.Infrastructure
 			UserHasExerciseWeightInTimeRange = new HashSet<UserHasExerciseWeightInTimeRange>();
 		}
 
-		public int? RedCapRecordId { get; set; }
+		public int RedCapRecordId { get; set; }
 		public DateTime RedCapBaseline { get; set; }
-		public char RandomisationGroup { get; set; }
 
 		public ICollection<GroupHasExerciseInTimeRange> GroupHasExerciseInTimeRange { get; set; }
 		public ICollection<UserHasExerciseWeightInTimeRange> UserHasExerciseWeightInTimeRange { get; set; }
