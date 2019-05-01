@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -89,7 +92,13 @@ namespace PDGTAPI
 				});
 			});
 
-			services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            services.Configure<RequestLocalizationOptions>(options =>
+            {
+                options.DefaultRequestCulture = new RequestCulture(Configuration["CultureSettings:Locale"]);
+            });
+
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -103,12 +112,14 @@ namespace PDGTAPI
 			{
 				app.UseHsts();
 			}
-			app.UseCors("DefaultPolicy");
+            app.UseRequestLocalization();
+            app.UseCors("DefaultPolicy");
 			DataContext.Database.EnsureCreated();
 			app.UseAuthentication();
 			new DataSeeder(serviceProvider.GetRequiredService<RoleManager<IdentityRole>>()).Seed();
 			app.UseHttpsRedirection();
 			app.UseMvc();
-		}
+
+        }
 	}
 }
