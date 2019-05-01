@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PDGTAPI.Models.DTO
+namespace PDGTAPI.DTO
 {
-    public class TrainedSessions
+    public class CompletedSessionsDTO
     {
         public List<DateTime> List { get; set; }
     }

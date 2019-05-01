@@ -1,9 +1,9 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace PDGTAPI.Models.DTO
+namespace PDGTAPI.DTO
 {
-    public class UserData
+    public class UserDataDTO
     {
         [Required]
         public string Token { get; set; }

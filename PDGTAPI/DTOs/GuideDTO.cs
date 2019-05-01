@@ -2,9 +2,9 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace PDGTAPI.Models.DTO
+namespace PDGTAPI.DTO
 {
-    public class Guide
+    public class GuideDTO
     {
         [Required]
         public byte[] Image { get; set; }
