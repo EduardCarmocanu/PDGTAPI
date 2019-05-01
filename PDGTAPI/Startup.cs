@@ -112,8 +112,8 @@ namespace PDGTAPI
 			{
 				app.UseHsts();
 			}
-            app.UseRequestLocalization();
-            app.UseCors("DefaultPolicy");
+            		app.UseRequestLocalization();
+            		app.UseCors("DefaultPolicy");
 			DataContext.Database.EnsureCreated();
 			app.UseAuthentication();
 			new DataSeeder(serviceProvider.GetRequiredService<RoleManager<IdentityRole>>()).Seed();
