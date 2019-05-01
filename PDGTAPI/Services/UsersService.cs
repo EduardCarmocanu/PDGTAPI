@@ -116,31 +116,24 @@ namespace PDGTAPI.Services
 				return result;
 			}
 
-			ServiceResult<bool> recordExistsResult = _redCapService.RecordExists(model.RedCapRecordId);
-			if (!recordExistsResult.Succeded)
+			ServiceResult<UserInfo> redCapRecordInformationResult = _redCapService.GetRecordInformation(model.RedCapRecordId);
+			if (!redCapRecordInformationResult.Succeded)
 			{
-				result.ErrorMessage = recordExistsResult.ErrorMessage;
-				return result;
-			}
-			if (!recordExistsResult.Content)
-			{
-				result.ErrorMessage = "Could not find patient record in RedCap database";
+				result.ErrorMessage = redCapRecordInformationResult.ErrorMessage;
 				return result;
 			}
 
-			ServiceResult<char> patientGroupResult = _redCapService.GetRecordGroup(model.RedCapRecordId);
-			if (!patientGroupResult.Succeded)
-			{
-				result.ErrorMessage = patientGroupResult.ErrorMessage;
-				return result;
-			}
+			int randomisationGroupId = _context.RandomisationGroup.SingleOrDefault(
+				x => x.GroupName == redCapRecordInformationResult.Content.RandomisationGroup
+			).Id;
 
 			User user = new User
 			{
 				UserName = model.Email,
 				Email = model.Email,
-				RedCapRecordId = model.RedCapRecordId,
-				RandomisationGroupID = _context.RandomisationGroup.SingleOrDefault(x => x.GroupName[0] == patientGroupResult.Content).Id
+				RedCapRecordId = redCapRecordInformationResult.Content.RecordId,
+				RandomisationGroupID = randomisationGroupId,
+				RedCapBaseline = redCapRecordInformationResult.Content.BaselineDate
 			};
 
 			var identityResult = await _userManager.CreateAsync(user, model.Password);
