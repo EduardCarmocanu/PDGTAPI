@@ -11,7 +11,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using PDGTAPI.Helpers;
 using PDGTAPI.Infrastructure;
-using PDGTAPI.Infrastructure.Entities;
 using PDGTAPI.Services;
 using RestSharp;
 
