@@ -28,19 +28,22 @@ namespace PDGTAPI.Services
 		private readonly SignInManager<User> _signInManager;
 		private readonly IConfiguration _configuration;
 		private readonly IRedCapService _redCapService;
+		private readonly ApplicationDataContext _context;
 
 		public UsersService
 	(
 			UserManager<User> userManager,
 			SignInManager<User> signInManager,
 			IConfiguration configuration,
-			IRedCapService redCapService
+			IRedCapService redCapService,
+			ApplicationDataContext context
 		)
 		{
 			_userManager = userManager;
 			_signInManager = signInManager;
 			_configuration = configuration;
 			_redCapService = redCapService;
+			_context = context;
 		}
 
 		public async Task<ServiceResult<string>> AuthenticateAsync(UserLogin model)
@@ -137,6 +140,7 @@ namespace PDGTAPI.Services
 				UserName = model.Email,
 				Email = model.Email,
 				RedCapRecordId = model.RedCapRecordId,
+				RandomisationGroupID = _context.RandomisationGroup.SingleOrDefault(x => x.GroupName[0] == patientGroupResult.Content).Id
 			};
 
 			var identityResult = await _userManager.CreateAsync(user, model.Password);
