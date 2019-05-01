@@ -11,7 +11,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using PDGTAPI.Models;
-using PDGTAPI.Infrastructure.Entities;
+using PDGTAPI.Infrastructure;
 
 namespace PDGTAPI.Services
 {
@@ -137,7 +137,6 @@ namespace PDGTAPI.Services
 				UserName = model.Email,
 				Email = model.Email,
 				RedCapRecordId = model.RedCapRecordId,
-				RedCapGroup = patientGroupResult.Content
 			};
 
 			var identityResult = await _userManager.CreateAsync(user, model.Password);
