@@ -7,7 +7,7 @@ namespace PDGTAPI.Helpers
 {
 	public static class Groups
 	{
-		public static char Intervention = 'A';
-		public static char Control = 'B';
+		public static string Intervention = "A";
+		public static string Control = "B";
 	}
 }

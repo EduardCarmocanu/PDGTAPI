@@ -9,6 +9,6 @@ namespace PDGTAPI.Models
 	{
 		public int RecordId { get; set; }
 		public DateTime BaselineDate { get; set; }
-		public char RandomisationGroup { get; set; }
+		public string RandomisationGroup { get; set; }
 	}
 }
