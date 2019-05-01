@@ -127,7 +127,7 @@ namespace PDGTAPI.Services
 
 			if (char.TryParse(deserializedResponseContent, out char result)) // char result variable is declared inline
 			{
-				if (result == 'A' || result == 'B')
+				if (result == Groups.Intervention || result == Groups.Control)
 				{
 					serviceResult.Content = result; 
 					serviceResult.Succeded = true;
