@@ -9,9 +9,7 @@ namespace PDGTAPI.Infrastructure.Entities
 	public class User : IdentityUser
 	{
 		public int? RedCapRecordId { get; set; }
-		public char? RedCapGroup { get; set; }
 		public DateTime RedCapBaseline { get; set; }
-		public Group Group { get; set; }
-		public int? GroupID { get; set; }
+		public char RandomisationGroup { get; set; }
 	}
 }
