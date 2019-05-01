@@ -45,7 +45,9 @@ namespace PDGTAPI
 			});
 			services.AddDbContext<ApplicationDataContext>(options =>
 			{
-				options.UseSqlServer(Configuration.GetConnectionString("DefaultConnectionString"));
+				// USE SQL SERVER FOR PRODUCTION
+				options.UseInMemoryDatabase("PDGTAPI");
+				//options.UseSqlServer(Configuration.GetConnectionString("DefaultConnectionString"));
 			});
 				
 			services.AddIdentity<User, IdentityRole>()

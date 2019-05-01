@@ -13,9 +13,7 @@ namespace PDGTAPI.Services
 {
 	public interface IRedCapService
 	{
-		ServiceResult<bool> RecordExists(int RecordId);
-		ServiceResult<DateTime> GetRecordBaseline(int RecordId);
-		ServiceResult<char> GetRecordGroup(int RecordId);
+		ServiceResult<UserInfo> GetRecordInformation(int RecordId);
 	}
 
 	public class RedCapService : IRedCapService
@@ -30,118 +28,79 @@ namespace PDGTAPI.Services
 			restClient.BaseUrl = _configuration.GetValue<Uri>("RedCap:BaseEndpoint");
 		}
 
-		public ServiceResult<bool> RecordExists(int RecordId)
+		public ServiceResult<UserInfo> GetRecordInformation (int RecordId)
 		{
-			if (RecordId == 0)
+			ServiceResult<UserInfo> result = new ServiceResult<UserInfo>();
+
+			if (RecordId < 1)
 			{
-				throw new ArgumentException("RecordId must be > 0");
+				result.ErrorMessage = "Record ID < 1 cannot exist";
+				return result;
 			}
 
-			ServiceResult<bool> serviceResult = new ServiceResult<bool>();
+			const string Format = "json";
+			const string Content = "record";
+			const string Type = "flat";
+
 			RestRequest request = new RestRequest(Method.POST);
+			request.AddHeader("content-type", "multipart/form-data; boundary=&");
 
 			request.AddHeader("content-type", "multipart/form-data; boundary=&");
 			request.AddParameter(
 				"multipart/form-data; boundary=&",
 				"--&\r\nContent-Disposition: form-data; name=\"token\"\r\n\r\n" +
 				_configuration["RedCap:Token"] +
-				"\r\n--&\r\nContent-Disposition: form-data; name=\"content\"\r\n\r\nrecord\r\n--&\r\nContent-Disposition: form-data; name=\"format\"\r\n\r\njson\r\n--&\r\nContent-Disposition: form-data; name=\"records\"\r\n\r\n" +
+				"\r\n--&\r\nContent-Disposition: form-data; name=\"content\"\r\n\r\n" +
+				Content +
+				"\r\n--&\r\nContent-Disposition: form-data; name=\"format\"\r\n\r\n" +
+				Format +
+				"\r\n--&\r\nContent-Disposition: form-data; name=\"records\"\r\n\r\n" +
 				RecordId.ToString() +
-				"\r\n--&\r\nContent-Disposition: form-data; name=\"type\"\r\n\r\nflat\r\n--&\r\nContent-Disposition: form-data; name=\"events\"\r\n\r\nbaseline_arm_1\r\n--&\r\nContent-Disposition: form-data; name=\"fields\"\r\n\r\nrecord_id\r\n--&--",
-				ParameterType.RequestBody
-			);
-
-			IRestResponse response = _restClient.Execute(request);
-
-			dynamic deserializedResponseContent;
-			try
-			{
-				deserializedResponseContent = JsonConvert.DeserializeObject<dynamic>(response.Content);
-				if (deserializedResponseContent.First != null)
-				{
-					deserializedResponseContent = deserializedResponseContent.First["record_id"].Value;
-				}
-				else
-				{
-					serviceResult.ErrorMessage = "Empty response";
-					return serviceResult;
-				}
-			}
-			catch (Exception)
-			{
-				serviceResult.ErrorMessage = "Error deserializing request response";
-				return serviceResult;
-			}
-			 
-
-			if (int.TryParse(deserializedResponseContent, out int result)) // int result variable is declared inline
-			{
-				serviceResult.Content = result == RecordId;
-				serviceResult.Succeded = true;
-
-				return serviceResult;
-			}
-
-			serviceResult.ErrorMessage = "Error casting reponse result to int";
-			return serviceResult;
-		}
-
-		public ServiceResult<DateTime> GetRecordBaseline(int RecordId)
-		{
-			if (RecordId == 0)
-				throw new ArgumentException("RecordId must be > 0");
-
-			throw new NotImplementedException();
-		}
-
-		public ServiceResult<char> GetRecordGroup(int RecordId)
-		{
-			if (RecordId == 0)
-				throw new ArgumentException("RecordId must be > 0");
-
-			ServiceResult<char> serviceResult = new ServiceResult<char>();
-			RestRequest request = new RestRequest(Method.POST);
-
-			request.AddHeader("content-type", "multipart/form-data; boundary=&");
-			request.AddParameter(
-				"multipart/form-data; boundary=&",
-				"--&\r\nContent-Disposition: form-data; name=\"token\"\r\n\r\n" +
-				_configuration["RedCap:Token"] +
-				"\r\n--&\r\nContent-Disposition: form-data; name=\"content\"\r\n\r\nrecord\r\n--&\r\nContent-Disposition: form-data; name=\"format\"\r\n\r\njson\r\n--&\r\nContent-Disposition: form-data; name=\"records\"\r\n\r\n" +
-				RecordId.ToString() +
-				"\r\n--&\r\nContent-Disposition: form-data; name=\"type\"\r\n\r\nflat\r\n--&\r\nContent-Disposition: form-data; name=\"events\"\r\n\r\nbaseline_arm_1\r\n--&\r\nContent-Disposition: form-data; name=\"fields\"\r\n\r\nrandomisation_group\r\n--&--",
+				"\r\n--&\r\nContent-Disposition: form-data; name=\"type\"\r\n\r\n\\" +
+				Type +
+				"\r\n--&\r\nContent-Disposition: form-data; name=\"events\"\r\n\r\nbaseline_arm_1\r\n--&\r\nContent-Disposition: form-data; name=\"fields\"\r\n\r\nrecord_id, date_intervention, randomisation_group\r\n--&--",
 				ParameterType.RequestBody);
 
 			IRestResponse response = _restClient.Execute(request);
 
-			string deserializedResponseContent;
+			dynamic[] deserializedResponse = JsonConvert.DeserializeObject<dynamic[]>(response.Content);
+
 			try
 			{
-				deserializedResponseContent = JsonConvert.DeserializeObject<dynamic>(response.Content)[0]["randomisation_group"].Value;
+				if (deserializedResponse.Length < 1)
+				{
+					result.ErrorMessage = "Record Does not exist";
+					return result;
+				}
+
+				string recordId = deserializedResponse[0]["record_id"];
+				string baselineDate = deserializedResponse[0]["date_intervention"];
+				string randomisationGroupRaw = deserializedResponse[0]["randomisation_group"];
+
+				if (randomisationGroupRaw.Length < 1)
+				{
+					result.ErrorMessage = "Record does not have a set randomisation group";
+					return result;
+				}
+
+				char[] randomisationGroup = randomisationGroupRaw.ToCharArray();
+
+				result.Content = new UserInfo
+				{
+					RecordId = int.Parse(recordId),
+					RandomisationGroup = randomisationGroup[0],
+					BaselineDate = DateTime.Parse(baselineDate)
+				};
+				result.Succeded = true;
+
+				return result;
 			}
 			catch (Exception)
 			{
-				serviceResult.ErrorMessage = "Failed to deserialize request response";
-				return serviceResult;
+				result.ErrorMessage = "Could not create User Info object";
 			}
 
-			if (char.TryParse(deserializedResponseContent, out char result)) // char result variable is declared inline
-			{
-				if (result == Groups.Intervention || result == Groups.Control)
-				{
-					serviceResult.Content = result; 
-					serviceResult.Succeded = true;
-
-					return serviceResult;
-				}
-
-				serviceResult.ErrorMessage = "Patient group is not assigned or not part of the set {A, B}";
-
-				return serviceResult;
-			}
-
-			serviceResult.ErrorMessage = "Failed to parse request response";
-			return serviceResult;
+			return result;
 		}
 	}
 }
