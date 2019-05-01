@@ -75,20 +75,18 @@ namespace PDGTAPI.Services
 
 				string recordId = deserializedResponse[0]["record_id"];
 				string baselineDate = deserializedResponse[0]["date_intervention"];
-				string randomisationGroupRaw = deserializedResponse[0]["randomisation_group"];
+				string randomisationGroup = deserializedResponse[0]["randomisation_group"];
 
-				if (randomisationGroupRaw.Length < 1)
+				if (randomisationGroup.Length < 1)
 				{
 					result.ErrorMessage = "Record does not have a set randomisation group";
 					return result;
 				}
 
-				char[] randomisationGroup = randomisationGroupRaw.ToCharArray();
-
 				result.Content = new UserInfo
 				{
 					RecordId = int.Parse(recordId),
-					RandomisationGroup = randomisationGroup[0],
+					RandomisationGroup = randomisationGroup,
 					BaselineDate = DateTime.Parse(baselineDate)
 				};
 				result.Succeded = true;
