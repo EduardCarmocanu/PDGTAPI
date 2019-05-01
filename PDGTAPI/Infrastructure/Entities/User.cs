@@ -11,5 +11,7 @@ namespace PDGTAPI.Infrastructure.Entities
 		public int? RedCapRecordId { get; set; }
 		public char? RedCapGroup { get; set; }
 		public DateTime RedCapBaseline { get; set; }
+		public Group Group { get; set; }
+		public int? GroupID { get; set; }
 	}
 }
