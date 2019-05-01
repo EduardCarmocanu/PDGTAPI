@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using PDGTAPI.Helpers;
 using PDGTAPI.Infrastructure;
 using PDGTAPI.Infrastructure.Entities;
 using PDGTAPI.Services;
@@ -48,7 +49,7 @@ namespace PDGTAPI
 				options.UseSqlServer(Configuration.GetConnectionString("DefaultConnectionString"));
 			});
 				
-			services.AddIdentity<UserEntity, IdentityRole>()
+			services.AddIdentity<User, IdentityRole>()
 				.AddEntityFrameworkStores<ApplicationDataContext>();
 
 			services.AddAuthentication(options =>
@@ -75,15 +76,15 @@ namespace PDGTAPI
 			{
 				options.AddPolicy("Doctors", policy =>
 				{
-					policy.RequireRole("Doctor, Administrator");
+					policy.RequireRole(Roles.Doctor, Roles.Administrator);
 				});
 				options.AddPolicy("Patients", policy =>
 				{
-					policy.RequireRole("Patient");
+					policy.RequireRole(Roles.Patient);
 				});
 				options.AddPolicy("Administrators", policy =>
 				{
-					policy.RequireRole("Administrator");
+					policy.RequireRole(Roles.Administrator);
 				});
 			});
 
