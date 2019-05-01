@@ -16,6 +16,7 @@ namespace PDGTAPI.Infrastructure
 
 		public int RedCapRecordId { get; set; }
 		public DateTime RedCapBaseline { get; set; }
+		public int RandomisationGroupID { get; set; }
 
 		public ICollection<GroupHasExerciseInTimeRange> GroupHasExerciseInTimeRange { get; set; }
 		public ICollection<UserHasExerciseWeightInTimeRange> UserHasExerciseWeightInTimeRange { get; set; }
