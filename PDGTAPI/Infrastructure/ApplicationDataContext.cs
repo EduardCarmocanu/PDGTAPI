@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PDGTAPI.Infrastructure.Entities;
-using PDGTAPI.Infrastructure.Entities.BindingTables;
 using System;
 using System.Collections.Generic;
 using System.Linq;
