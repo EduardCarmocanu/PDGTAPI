@@ -11,7 +11,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using PDGTAPI.Models;
-using PDGTAPI.Infrastructure.Entities;
+using PDGTAPI.Infrastructure;
 
 namespace PDGTAPI.Services
 {
@@ -24,23 +24,26 @@ namespace PDGTAPI.Services
 	
 	public class UsersService : IUsersService
 	{
-		private readonly UserManager<UserEntity> _userManager;
-		private readonly SignInManager<UserEntity> _signInManager;
+		private readonly UserManager<User> _userManager;
+		private readonly SignInManager<User> _signInManager;
 		private readonly IConfiguration _configuration;
 		private readonly IRedCapService _redCapService;
+		private readonly ApplicationDataContext _context;
 
 		public UsersService
 	(
-			UserManager<UserEntity> userManager,
-			SignInManager<UserEntity> signInManager,
+			UserManager<User> userManager,
+			SignInManager<User> signInManager,
 			IConfiguration configuration,
-			IRedCapService redCapService
+			IRedCapService redCapService,
+			ApplicationDataContext context
 		)
 		{
 			_userManager = userManager;
 			_signInManager = signInManager;
 			_configuration = configuration;
 			_redCapService = redCapService;
+			_context = context;
 		}
 
 		public async Task<ServiceResult<string>> AuthenticateAsync(UserLogin model)
@@ -63,7 +66,7 @@ namespace PDGTAPI.Services
 				return result;
 			}
 
-			UserEntity user = await _userManager.FindByEmailAsync(model.Email);
+			User user = await _userManager.FindByEmailAsync(model.Email);
 			result.Content = GetToken(user);
 			result.Succeded = true;
 
@@ -77,12 +80,10 @@ namespace PDGTAPI.Services
 
 			ServiceResult<string> result = new ServiceResult<string>();
 
-			UserEntity user = new UserEntity
+			User user = new User
 			{
 				UserName = model.Email,
 				Email = model.Email,
-				FirstName = model.FirstName,
-				LastName = model.LastName
 			};
 
 			var identityResult = await _userManager.CreateAsync(user, model.Password);
@@ -134,14 +135,12 @@ namespace PDGTAPI.Services
 				return result;
 			}
 
-			UserEntity user = new UserEntity
+			User user = new User
 			{
 				UserName = model.Email,
 				Email = model.Email,
-				FirstName = model.FirstName,
-				LastName = model.LastName,
 				RedCapRecordId = model.RedCapRecordId,
-				RedCapGroup = patientGroupResult.Content
+				RandomisationGroupID = _context.RandomisationGroup.SingleOrDefault(x => x.GroupName[0] == patientGroupResult.Content).Id
 			};
 
 			var identityResult = await _userManager.CreateAsync(user, model.Password);
@@ -158,7 +157,7 @@ namespace PDGTAPI.Services
 			return result;
 		}
 
-		private string GetToken(UserEntity TokenUser)
+		private string GetToken(User TokenUser)
 		{
 			var utcNow = DateTime.UtcNow;
 
