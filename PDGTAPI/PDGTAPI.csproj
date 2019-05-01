@@ -17,7 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Infrastructure\NewFolder\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
