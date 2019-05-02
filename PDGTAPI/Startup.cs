@@ -47,8 +47,8 @@ namespace PDGTAPI
 			services.AddDbContext<ApplicationDataContext>(options =>
 			{
 				// USE SQL SERVER FOR PRODUCTION
-				options.UseInMemoryDatabase("PDGTAPI");
-				//options.UseSqlServer(Configuration.GetConnectionString("DefaultConnectionString"));
+				//options.UseInMemoryDatabase("PDGTAPI");
+				options.UseSqlServer(Configuration.GetConnectionString("DefaultConnectionString"));
 			});
 				
 			services.AddIdentity<User, IdentityRole>()
@@ -113,7 +113,11 @@ namespace PDGTAPI
 			app.UseCors("DefaultPolicy");
 			DataContext.Database.EnsureCreated();
 			app.UseAuthentication();
-			new DataSeeder(serviceProvider.GetRequiredService<RoleManager<IdentityRole>>()).Seed();
+			new DataSeeder(
+				serviceProvider.GetRequiredService<RoleManager<IdentityRole>>(),
+				serviceProvider.GetRequiredService<UserManager<User>>(),
+				serviceProvider.GetRequiredService<ApplicationDataContext>()
+			).Seed();
 			app.UseHttpsRedirection();
 			app.UseMvc();
 		}

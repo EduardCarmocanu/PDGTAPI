@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using PDGTAPI.Helpers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,10 +11,14 @@ namespace PDGTAPI.Infrastructure
 	public class DataSeeder
 	{
 		private readonly RoleManager<IdentityRole> _roleManager;
+		private readonly UserManager<User> _userManager;
+		private readonly ApplicationDataContext _context;
 
-		public DataSeeder(RoleManager<IdentityRole> roleManager)
+		public DataSeeder(RoleManager<IdentityRole> roleManager, UserManager<User> userManager, ApplicationDataContext context)
 		{
 			_roleManager = roleManager;
+			_userManager = userManager;
+			_context = context;
 		}
 
 		public void Seed()
@@ -23,6 +28,58 @@ namespace PDGTAPI.Infrastructure
 				_roleManager.CreateAsync(new IdentityRole("Administrator"));
 				_roleManager.CreateAsync(new IdentityRole("Doctor"));
 				_roleManager.CreateAsync(new IdentityRole("Patient"));
+			}
+
+			if (!_context.RandomisationGroup.Any())
+			{
+				RandomisationGroup control = new RandomisationGroup() { GroupName = "A" };
+				RandomisationGroup intervention = new RandomisationGroup() { GroupName = "B" };
+
+				_context.RandomisationGroup.AddAsync(control);
+				_context.RandomisationGroup.AddAsync(intervention);
+				_context.SaveChangesAsync().Wait();
+			}
+
+			if (!_userManager.Users.Any())
+			{
+				var randomisationGroup = _context.RandomisationGroup.FirstOrDefault(x => x.GroupName == Groups.Intervention);
+				DateTime baselineDate = new DateTime();
+
+				User patient = new User()
+				{
+					UserName = "patient@email.com",
+					Email = "patient@email.com",
+					RedCapRecordId = 1,
+					RandomisationGroupID = randomisationGroup.Id,
+					RedCapBaseline = baselineDate
+				};
+				IdentityResult patientResult = _userManager.CreateAsync(patient, "Password123!").Result;
+				if (patientResult.Succeeded)
+				{
+					_userManager.AddToRoleAsync(patient, Roles.Patient).Wait();
+				}
+
+				User doctor = new User()
+				{
+					UserName = "doctor@email.com",
+					Email = "doctor@email.com",
+				};
+				IdentityResult doctorResult = _userManager.CreateAsync(doctor, "Password123!").Result;
+				if (doctorResult.Succeeded)
+				{
+					_userManager.AddToRoleAsync(doctor, Roles.Doctor).Wait();
+				}
+
+				User admin = new User()
+				{
+					UserName = "admin@email.com",
+					Email = "admin@email.com",
+				};
+				IdentityResult adminResult = _userManager.CreateAsync(admin, "Password123!").Result;
+				if (adminResult.Succeeded)
+				{
+					_userManager.AddToRoleAsync(admin, Roles.Administrator).Wait();
+				}
 			}
 		}
 	}
