@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -56,20 +56,20 @@ namespace PDGTAPI
 				.AddEntityFrameworkStores<ApplicationDataContext>();
 
 			services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-			.AddJwtBearer(options =>
-			{
-				options.RequireHttpsMetadata = false;
-				options.SaveToken = true;
-				options.TokenValidationParameters = new TokenValidationParameters
+				.AddJwtBearer(options =>
 				{
-					ValidateIssuerSigningKey = true,
-					IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Security:JWT:Key"])),
-					ValidateAudience = true,
-					ValidAudience = Configuration["Security:JWT:Audience"],
-					ValidateIssuer = true,
-					ValidIssuer = Configuration["Security:JWT:Issuer"]
-				};
-			});
+					options.RequireHttpsMetadata = false;
+					options.SaveToken = true;
+					options.TokenValidationParameters = new TokenValidationParameters
+					{
+						ValidateIssuerSigningKey = true,
+						IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Security:JWT:Key"])),
+						ValidateAudience = true,
+						ValidAudience = Configuration["Security:JWT:Audience"],
+						ValidateIssuer = true,
+						ValidIssuer = Configuration["Security:JWT:Issuer"]
+					};
+				});
 
 			services.AddAuthorization(options =>
 			{
