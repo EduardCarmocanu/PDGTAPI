@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -34,6 +34,7 @@ namespace PDGTAPI
 			services.AddTransient<IRedCapService, RedCapService>();
 			services.AddTransient<IRestClient, RestClient>();
 			services.AddTransient<IUsersService, UsersService>();
+			services.AddTransient<IWeekService, WeekService>();
 
 			services.AddCors(options =>
 			{
