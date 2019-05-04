@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,5 +21,6 @@ namespace PDGTAPI.Infrastructure
 		public ICollection<GroupHasExerciseInTimeRange> GroupHasExerciseInTimeRange { get; set; }
 		public ICollection<UserHasExerciseWeightInTimeRange> UserHasExerciseWeightInTimeRange { get; set; }
 		public ICollection<Session> Sessions { get; set; }
+		public ICollection<WeeklyQuestionnaire> WeeklyQuestionnaires { get; set; }
 	}
 }

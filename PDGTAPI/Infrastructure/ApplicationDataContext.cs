@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -17,6 +17,7 @@ namespace PDGTAPI.Infrastructure
         public virtual DbSet<Session> Session { get; set; }
         public virtual DbSet<TimeRange> TimeRange { get; set; }
         public virtual DbSet<UserHasExerciseWeightInTimeRange> UserHasExerciseWeightInTimeRange { get; set; }
+		public virtual DbSet<WeeklyQuestionnaire> WeeklyQuestionnaire { get; set; }
 
 		public ApplicationDataContext(DbContextOptions options) : base(options) { }
 
@@ -101,6 +102,19 @@ namespace PDGTAPI.Infrastructure
 
 				entity.Property(e => e.UserId).IsRequired();
 			});
+
+			modelBuilder.Entity<WeeklyQuestionnaire>(entity =>
+			{
+				entity.Property(e => e.Id).HasColumnName("ID");
+
+				entity.Property(e => e.Completed)
+					.HasDefaultValue(false);
+
+				entity.Property(e => e.CreationTime)
+					.HasColumnType("datetime")
+					.IsRequired();
+
+				entity.Property(e => e.UserId).IsRequired();
 			});
 
 			modelBuilder.Entity<TimeRange>(entity =>
