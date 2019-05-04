@@ -25,9 +25,9 @@ namespace PDGTAPI.Infrastructure
 		{
 			if (!_roleManager.Roles.Any())
 			{
-				_roleManager.CreateAsync(new IdentityRole("Administrator"));
-				_roleManager.CreateAsync(new IdentityRole("Doctor"));
-				_roleManager.CreateAsync(new IdentityRole("Patient"));
+				_roleManager.CreateAsync(new IdentityRole("Administrator")).Wait();
+				_roleManager.CreateAsync(new IdentityRole("Doctor")).Wait();
+				_roleManager.CreateAsync(new IdentityRole("Patient")).Wait();
 			}
 
 			if (!_context.RandomisationGroup.Any())
@@ -35,8 +35,8 @@ namespace PDGTAPI.Infrastructure
 				RandomisationGroup control = new RandomisationGroup() { GroupName = "A" };
 				RandomisationGroup intervention = new RandomisationGroup() { GroupName = "B" };
 
-				_context.RandomisationGroup.AddAsync(control);
-				_context.RandomisationGroup.AddAsync(intervention);
+				_context.RandomisationGroup.AddAsync(control).Wait();
+				_context.RandomisationGroup.AddAsync(intervention).Wait();
 				_context.SaveChangesAsync().Wait();
 			}
 
