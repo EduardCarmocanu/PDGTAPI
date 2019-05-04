@@ -7,6 +7,10 @@
   <ItemGroup>
     <Compile Remove="Migrations\20190501133955_RemoveRandomisationGroup.cs" />
     <Compile Remove="Migrations\20190501133955_RemoveRandomisationGroup.Designer.cs" />
+    <Compile Remove="Migrations\20190504173414_SessionRequireUserId.cs" />
+    <Compile Remove="Migrations\20190504173414_SessionRequireUserId.Designer.cs" />
+    <Compile Remove="Migrations\20190504180709_WeeklyQuestionnaireTable.cs" />
+    <Compile Remove="Migrations\20190504180709_WeeklyQuestionnaireTable.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>
