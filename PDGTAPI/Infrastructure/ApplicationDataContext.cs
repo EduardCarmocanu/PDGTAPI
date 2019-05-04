@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -98,6 +98,9 @@ namespace PDGTAPI.Infrastructure
 				entity.Property(e => e.Id).HasColumnName("ID");
 
 				entity.Property(e => e.CompletionTime).HasColumnType("datetime");
+
+				entity.Property(e => e.UserId).IsRequired();
+			});
 			});
 
 			modelBuilder.Entity<TimeRange>(entity =>
