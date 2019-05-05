@@ -80,7 +80,7 @@ namespace PDGTAPI.Infrastructure
 					.HasMaxLength(2048);
 
 				entity.Property(e => e.GuideImage)
-					.IsRequired()
+					.IsRequired(false)
 					.HasColumnType("image");
 			});
 
