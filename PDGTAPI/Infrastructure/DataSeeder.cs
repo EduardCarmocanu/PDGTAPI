@@ -43,7 +43,11 @@ namespace PDGTAPI.Infrastructure
 			if (!_userManager.Users.Any())
 			{
 				var randomisationGroup = _context.RandomisationGroup.FirstOrDefault(x => x.GroupName == Groups.Intervention);
-				DateTime baselineDate = new DateTime();
+				DateTime baselineDate = new DateTime(
+					DateTime.Now.Year,
+					DateTime.Now.Month, 
+					DateTime.Now.Day, 0, 0, 0
+				);
 
 				User patient = new User()
 				{
