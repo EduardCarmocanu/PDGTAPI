@@ -10,7 +10,7 @@ namespace PDGTAPI.Models
 	public class Session <TPostSessionQuestionnaire, TSet>
 	{
 		[Required]
-		public Exercise<TSet>[] Exercises { get; set; }
+		public List<Exercise<TSet>> Exercises { get; set; }
 		[Required]
 		public PreSessionQuestionnaire PreQuestionaire { get; set; }
 		[Required]
