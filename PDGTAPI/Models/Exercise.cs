@@ -12,6 +12,6 @@ namespace PDGTAPI.Models
 		public bool IsSkipped { get; set; }
 		public string SkippingReason { get; set; }
 		[Required]
-		public TSet[] Sets { get; set; }
+		public List<TSet> Sets { get; set; }
 	}
 }
