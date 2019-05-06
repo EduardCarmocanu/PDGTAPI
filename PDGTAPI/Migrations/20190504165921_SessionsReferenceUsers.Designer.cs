@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PDGTAPI.Infrastructure;
 
 namespace PDGTAPI.Migrations
 {
     [DbContext(typeof(ApplicationDataContext))]
-    partial class ApplicationDataContextModelSnapshot : ModelSnapshot
+    [Migration("20190504165921_SessionsReferenceUsers")]
+    partial class SessionsReferenceUsers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -186,6 +188,7 @@ namespace PDGTAPI.Migrations
                         .HasMaxLength(2048);
 
                     b.Property<byte[]>("GuideImage")
+                        .IsRequired()
                         .HasColumnType("image");
 
                     b.HasKey("Id");
@@ -220,8 +223,7 @@ namespace PDGTAPI.Migrations
                     b.Property<DateTime>("CompletionTime")
                         .HasColumnType("datetime");
 
-                    b.Property<string>("UserId")
-                        .IsRequired();
+                    b.Property<string>("UserId");
 
                     b.HasKey("Id");
 
@@ -331,30 +333,6 @@ namespace PDGTAPI.Migrations
                     b.ToTable("UserHasExerciseWeightInTimeRange");
                 });
 
-            modelBuilder.Entity("PDGTAPI.Infrastructure.WeeklyQuestionnaire", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("ID")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<bool>("Completed")
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValue(false);
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("UserId")
-                        .IsRequired();
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("WeeklyQuestionnaire");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole")
@@ -434,8 +412,7 @@ namespace PDGTAPI.Migrations
                 {
                     b.HasOne("PDGTAPI.Infrastructure.User", "User")
                         .WithMany("Sessions")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("PDGTAPI.Infrastructure.User", b =>
@@ -461,14 +438,6 @@ namespace PDGTAPI.Migrations
                         .WithMany("UserHasExerciseWeightInTimeRange")
                         .HasForeignKey("UserId")
                         .HasConstraintName("FK__UserHasEx__UserI__6E01572D");
-                });
-
-            modelBuilder.Entity("PDGTAPI.Infrastructure.WeeklyQuestionnaire", b =>
-                {
-                    b.HasOne("PDGTAPI.Infrastructure.User", "User")
-                        .WithMany("WeeklyQuestionnaires")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

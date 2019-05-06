@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PDGTAPI.Infrastructure;
 
 namespace PDGTAPI.Migrations
 {
     [DbContext(typeof(ApplicationDataContext))]
-    partial class ApplicationDataContextModelSnapshot : ModelSnapshot
+    [Migration("20190504182446_WeeklyQuestionnaireTable")]
+    partial class WeeklyQuestionnaireTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -186,6 +188,7 @@ namespace PDGTAPI.Migrations
                         .HasMaxLength(2048);
 
                     b.Property<byte[]>("GuideImage")
+                        .IsRequired()
                         .HasColumnType("image");
 
                     b.HasKey("Id");

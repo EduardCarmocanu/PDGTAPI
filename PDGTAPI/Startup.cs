@@ -34,6 +34,7 @@ namespace PDGTAPI
 			services.AddTransient<IRedCapService, RedCapService>();
 			services.AddTransient<IRestClient, RestClient>();
 			services.AddTransient<IUsersService, UsersService>();
+			services.AddTransient<IWeekService, WeekService>();
 
 			services.AddCors(options =>
 			{
@@ -54,25 +55,21 @@ namespace PDGTAPI
 			services.AddIdentity<User, IdentityRole>()
 				.AddEntityFrameworkStores<ApplicationDataContext>();
 
-			services.AddAuthentication(options =>
-			{
-				options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-				options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-			})
-			.AddJwtBearer(options =>
-			{
-				options.RequireHttpsMetadata = false;
-				options.SaveToken = true;
-				options.TokenValidationParameters = new TokenValidationParameters
+			services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+				.AddJwtBearer(options =>
 				{
-					ValidateIssuerSigningKey = true,
-					IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Security:JWT:Key"])),
-					ValidateAudience = true,
-					ValidAudience = Configuration["Security:JWT:Audience"],
-					ValidateIssuer = true,
-					ValidIssuer = Configuration["Security:JWT:Issuer"]
-				};
-			});
+					options.RequireHttpsMetadata = false;
+					options.SaveToken = true;
+					options.TokenValidationParameters = new TokenValidationParameters
+					{
+						ValidateIssuerSigningKey = true,
+						IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Security:JWT:Key"])),
+						ValidateAudience = true,
+						ValidAudience = Configuration["Security:JWT:Audience"],
+						ValidateIssuer = true,
+						ValidIssuer = Configuration["Security:JWT:Issuer"]
+					};
+				});
 
 			services.AddAuthorization(options =>
 			{

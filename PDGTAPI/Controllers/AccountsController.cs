@@ -46,7 +46,7 @@ namespace PDGTAPI.Controllers
 		}
 
 		[HttpPost]
-		[Route("registerdoctor")]
+		[Route("register/doctor")]
 		[Authorize(Policy = "Administrators")]
 		public async Task<IActionResult> RegisterDoctorAsync([FromBody] DoctorRegistration model)
 		{
@@ -60,7 +60,7 @@ namespace PDGTAPI.Controllers
 		}
 
 		[HttpPost]
-		[Route("registerpatient")]
+		[Route("register/patient")]
 		[Authorize(Policy = "Doctors")]
 		public async Task<IActionResult> RegisterPatientAsync([FromBody] PatientRegistration model)
 		{
