@@ -13,7 +13,7 @@ namespace PDGTAPI.Models.Questionnaires
 		public int Pain { get; set; }
 		[Required]
 		public bool TakenPainkillers { get; set; }
-		public Painkiller[] Painkillers { get; set; }
+		public List<Painkiller> Painkillers { get; set; }
 
 	}
 }
