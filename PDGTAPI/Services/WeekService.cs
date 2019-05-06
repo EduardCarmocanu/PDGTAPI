@@ -100,12 +100,16 @@ namespace PDGTAPI.Services
 			/**
 			 * It's a big query...but it works ¯\_(ツ)_/¯
 			 * **/
+
+			int normalizedCurrentWeek = RelativeWeek((DateTime)user.RedCapBaseline) + 1;
+
 			List<ExerciseDTO> exercises = (
 				from UserHasExerciseWeightInTimeRange in _context.UserHasExerciseWeightInTimeRange
-					join Exercise in _context.Exercise on UserHasExerciseWeightInTimeRange.ExerciseId equals Exercise.Id
 					join User in _context.Users on UserHasExerciseWeightInTimeRange.UserId equals User.Id
-					join Guide in _context.Guide on Exercise.GuideId equals Guide.Id
 					join TimeRange in _context.TimeRange on UserHasExerciseWeightInTimeRange.TimeRangeId equals TimeRange.Id
+						where TimeRange.StartWeek <= normalizedCurrentWeek && normalizedCurrentWeek <= TimeRange.EndWeek
+					join Exercise in _context.Exercise on UserHasExerciseWeightInTimeRange.ExerciseId equals Exercise.Id
+					join Guide in _context.Guide on Exercise.GuideId equals Guide.Id
 					select new ExerciseDTO
 					{
 						Name = Exercise.ExerciseName,
