@@ -11,7 +11,7 @@ namespace PDGTAPI.Infrastructure
 		public User()
 		{
 			GroupHasExerciseInTimeRange = new HashSet<GroupHasExerciseInTimeRange>();
-			UserHasExerciseWeightInTimeRange = new HashSet<UserHasExerciseWeightInTimeRange>();
+			UserHasExerciseInTimeRange = new HashSet<UserHasExerciseInTimeRange>();
 		}
 
 		public int? RedCapRecordId { get; set; }
@@ -19,8 +19,7 @@ namespace PDGTAPI.Infrastructure
 		public int? RandomisationGroupID { get; set; }
 
 		public ICollection<GroupHasExerciseInTimeRange> GroupHasExerciseInTimeRange { get; set; }
-		public ICollection<UserHasExerciseWeightInTimeRange> UserHasExerciseWeightInTimeRange { get; set; }
+		public ICollection<UserHasExerciseInTimeRange> UserHasExerciseInTimeRange { get; set; }
 		public ICollection<Session> Sessions { get; set; }
-		public ICollection<WeeklyQuestionnaire> WeeklyQuestionnaires { get; set; }
 	}
 }

@@ -12,12 +12,10 @@ namespace PDGTAPI.Infrastructure
 	{
         public virtual DbSet<Exercise> Exercise { get; set; }
         public virtual DbSet<GroupHasExerciseInTimeRange> GroupHasExerciseInTimeRange { get; set; }
-        public virtual DbSet<Guide> Guide { get; set; }
         public virtual DbSet<RandomisationGroup> RandomisationGroup { get; set; }
         public virtual DbSet<Session> Session { get; set; }
         public virtual DbSet<TimeRange> TimeRange { get; set; }
-        public virtual DbSet<UserHasExerciseWeightInTimeRange> UserHasExerciseWeightInTimeRange { get; set; }
-		public virtual DbSet<WeeklyQuestionnaire> WeeklyQuestionnaire { get; set; }
+        public virtual DbSet<UserHasExerciseInTimeRange> UserHasExerciseInTimeRange { get; set; }
 
 		public ApplicationDataContext(DbContextOptions options) : base(options) { }
 
@@ -32,14 +30,6 @@ namespace PDGTAPI.Infrastructure
 				entity.Property(e => e.ExerciseName)
 					.IsRequired()
 					.HasMaxLength(255);
-
-				entity.Property(e => e.GuideId).HasColumnName("GuideID");
-
-				entity.HasOne(d => d.Guide)
-					.WithMany(p => p.Exercise)
-					.HasForeignKey(d => d.GuideId)
-					.OnDelete(DeleteBehavior.ClientSetNull)
-					.HasConstraintName("FK__Exercise__GuideI__619B8048");
 			});
 
 			modelBuilder.Entity<GroupHasExerciseInTimeRange>(entity =>
@@ -71,19 +61,6 @@ namespace PDGTAPI.Infrastructure
 					.HasConstraintName("FK__GroupHasE__TimeR__74AE54BC");
 			});
 
-			modelBuilder.Entity<Guide>(entity =>
-			{
-				entity.Property(e => e.Id).HasColumnName("ID");
-
-				entity.Property(e => e.GuideDescription)
-					.IsRequired()
-					.HasMaxLength(2048);
-
-				entity.Property(e => e.GuideImage)
-					.IsRequired(false)
-					.HasColumnType("image");
-			});
-
 			modelBuilder.Entity<RandomisationGroup>(entity =>
 			{
 				entity.Property(e => e.Id).HasColumnName("ID");
@@ -103,26 +80,12 @@ namespace PDGTAPI.Infrastructure
 				entity.Property(e => e.UserId).IsRequired();
 			});
 
-			modelBuilder.Entity<WeeklyQuestionnaire>(entity =>
-			{
-				entity.Property(e => e.Id).HasColumnName("ID");
-
-				entity.Property(e => e.Completed)
-					.HasDefaultValue(false);
-
-				entity.Property(e => e.CreationTime)
-					.HasColumnType("datetime")
-					.IsRequired();
-
-				entity.Property(e => e.UserId).IsRequired();
-			});
-
 			modelBuilder.Entity<TimeRange>(entity =>
 			{
 				entity.Property(e => e.Id).HasColumnName("ID");
 			});
 
-			modelBuilder.Entity<UserHasExerciseWeightInTimeRange>(entity =>
+			modelBuilder.Entity<UserHasExerciseInTimeRange>(entity =>
 			{
 				entity.HasKey(e => new { e.UserId, e.ExerciseId, e.TimeRangeId });
 
@@ -133,19 +96,19 @@ namespace PDGTAPI.Infrastructure
 				entity.Property(e => e.TimeRangeId).HasColumnName("TimeRangeID");
 
 				entity.HasOne(d => d.Exercise)
-					.WithMany(p => p.UserHasExerciseWeightInTimeRange)
+					.WithMany(p => p.UserHasExerciseInTimeRange)
 					.HasForeignKey(d => d.ExerciseId)
 					.OnDelete(DeleteBehavior.ClientSetNull)
 					.HasConstraintName("FK__UserHasEx__Exerc__6EF57B66");
 
 				entity.HasOne(d => d.TimeRange)
-					.WithMany(p => p.UserHasExerciseWeightInTimeRange)
+					.WithMany(p => p.UserHasExerciseInTimeRange)
 					.HasForeignKey(d => d.TimeRangeId)
 					.OnDelete(DeleteBehavior.ClientSetNull)
 					.HasConstraintName("FK__UserHasEx__TimeR__6FE99F9F");
 
 				entity.HasOne(d => d.User)
-					.WithMany(p => p.UserHasExerciseWeightInTimeRange)
+					.WithMany(p => p.UserHasExerciseInTimeRange)
 					.HasForeignKey(d => d.UserId)
 					.OnDelete(DeleteBehavior.ClientSetNull)
 					.HasConstraintName("FK__UserHasEx__UserI__6E01572D");

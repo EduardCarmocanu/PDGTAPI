@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace PDGTAPI.Infrastructure
 {
@@ -8,7 +9,7 @@ namespace PDGTAPI.Infrastructure
         public TimeRange()
         {
             GroupHasExerciseInTimeRange = new HashSet<GroupHasExerciseInTimeRange>();
-            UserHasExerciseWeightInTimeRange = new HashSet<UserHasExerciseWeightInTimeRange>();
+            UserHasExerciseInTimeRange = new HashSet<UserHasExerciseInTimeRange>();
         }
 
         public int Id { get; set; }
@@ -16,8 +17,10 @@ namespace PDGTAPI.Infrastructure
         public byte EndWeek { get; set; }
         public byte SetsAmount { get; set; }
         public byte RepsAmount { get; set; }
+		[StringLength(2)]
+		public string RedCapIdentifier { get; set; }
 
         public ICollection<GroupHasExerciseInTimeRange> GroupHasExerciseInTimeRange { get; set; }
-        public ICollection<UserHasExerciseWeightInTimeRange> UserHasExerciseWeightInTimeRange { get; set; }
+        public ICollection<UserHasExerciseInTimeRange> UserHasExerciseInTimeRange { get; set; }
     }
 }

@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PDGTAPI.Infrastructure;
 
 namespace PDGTAPI.Migrations
 {
     [DbContext(typeof(ApplicationDataContext))]
-    partial class ApplicationDataContextModelSnapshot : ModelSnapshot
+    [Migration("20190509074905_RemoveWQSRecommendedWeightExGuide")]
+    partial class RemoveWQSRecommendedWeightExGuide
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -288,7 +290,7 @@ namespace PDGTAPI.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("PDGTAPI.Infrastructure.UserHasExerciseInTimeRange", b =>
+            modelBuilder.Entity("PDGTAPI.Infrastructure.UserHasExerciseWeightInTimeRange", b =>
                 {
                     b.Property<string>("UserId")
                         .HasColumnName("UserID");
@@ -305,7 +307,7 @@ namespace PDGTAPI.Migrations
 
                     b.HasIndex("TimeRangeId");
 
-                    b.ToTable("UserHasExerciseInTimeRange");
+                    b.ToTable("UserHasExerciseWeightInTimeRange");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -390,20 +392,20 @@ namespace PDGTAPI.Migrations
                         .HasForeignKey("RandomisationGroupID");
                 });
 
-            modelBuilder.Entity("PDGTAPI.Infrastructure.UserHasExerciseInTimeRange", b =>
+            modelBuilder.Entity("PDGTAPI.Infrastructure.UserHasExerciseWeightInTimeRange", b =>
                 {
                     b.HasOne("PDGTAPI.Infrastructure.Exercise", "Exercise")
-                        .WithMany("UserHasExerciseInTimeRange")
+                        .WithMany("UserHasExerciseWeightInTimeRange")
                         .HasForeignKey("ExerciseId")
                         .HasConstraintName("FK__UserHasEx__Exerc__6EF57B66");
 
                     b.HasOne("PDGTAPI.Infrastructure.TimeRange", "TimeRange")
-                        .WithMany("UserHasExerciseInTimeRange")
+                        .WithMany("UserHasExerciseWeightInTimeRange")
                         .HasForeignKey("TimeRangeId")
                         .HasConstraintName("FK__UserHasEx__TimeR__6FE99F9F");
 
                     b.HasOne("PDGTAPI.Infrastructure.User", "User")
-                        .WithMany("UserHasExerciseInTimeRange")
+                        .WithMany("UserHasExerciseWeightInTimeRange")
                         .HasForeignKey("UserId")
                         .HasConstraintName("FK__UserHasEx__UserI__6E01572D");
                 });
