@@ -10,9 +10,9 @@ namespace PDGTAPI.Models
 	{
 		[Required]
 		public bool IsSkipped { get; set; }
-		[StringLength(1024, ErrorMessage = "Comment is too long", MinimumLength = 16)]
+		[StringLength(1024, ErrorMessage = "Reason must be between 16 and 1024 character", MinimumLength = 16)]
 		public string SkippingReason { get; set; }
 		[Required]
-		public Set Sets { get; set; }
+		public List<Set> Sets { get; set; }
 	}
 }
