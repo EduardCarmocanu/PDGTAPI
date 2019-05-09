@@ -75,7 +75,7 @@ namespace PDGTAPI
 			{
 				options.AddPolicy("Doctors", policy =>
 				{
-					policy.RequireRole(Roles.Doctor, Roles.Administrator);
+					policy.RequireRole(Roles.Physiotherapist, Roles.Administrator);
 				});
 				options.AddPolicy("Patients", policy =>
 				{
