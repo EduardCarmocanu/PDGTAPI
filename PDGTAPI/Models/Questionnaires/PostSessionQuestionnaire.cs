@@ -21,10 +21,10 @@ namespace PDGTAPI.Models.Questionnaires
 		public bool TrainingSideEffects { get; set; }
 
 		[Required]
-		[StringLength(1024, ErrorMessage = "Comment is too long", MinimumLength = 16)]
+		[StringLength(1024, ErrorMessage = "Side effects description must be between 16 and 1024 chracters long", MinimumLength = 16)]
 		public string TrainingSideEffectsDescription { get; set; }
 
-		[StringLength(1024, ErrorMessage = "Comment is tool long", MinimumLength = 16)]
+		[StringLength(1024, ErrorMessage = "Comment description must be between 16 and 1024 chracters long", MinimumLength = 16)]
 		public string Comments { get; set; }
 
 		[Required]
