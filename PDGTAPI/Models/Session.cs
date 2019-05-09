@@ -12,7 +12,7 @@ namespace PDGTAPI.Models
 		[Required]
 		public List<Exercise> Exercises { get; set; }
 		[Required]
-		public PreSessionQuestionnaire PreQuestionaire { get; set; }
+		public PreSessionQuestionnaire PreQuestionnaire { get; set; }
 		[Required]
 		public PostSessionQuestionnaire PostQuestionnaire { get; set; }
 	}
