@@ -8,7 +8,7 @@ namespace PDGTAPI.Helpers
 	public static class Roles
 	{
 		public static string Administrator = "Administrator";
-		public static string Physiotherapist = "Physiotherapist";
+		public static string Doctor = "Doctor";
 		public static string Patient = "Patient";
 	}
 }
