@@ -12,6 +12,8 @@ namespace PDGTAPI.Services
 	public interface IWeekService
 	{
 		ServiceResult<WeekStateDTO> GetState(string UserName);
+		int RelativeWeek(DateTime date);
+		IEnumerable<Session> CompletedSessions(User user);
 	}
 
 	public class WeekService : IWeekService
@@ -41,32 +43,11 @@ namespace PDGTAPI.Services
 				return result;
 			}
 
-			if (RelativeWeek((DateTime)user.RedCapBaseline) == 0)
-			{
-				result.Content.Exercises = Exercises(user);
-				return result;
-			}
-
-			WeeklyQuestionnaire weeklyQuestionnaire = WeeklyQuestionnaire(user);
-
-			if (weeklyQuestionnaire == null)
-			{
-				CreateQuestionnaire(user);
-				result.Content.AvailableWeeklyQuestionnaire = true;
-				return result;
-			}
-
-			if (!weeklyQuestionnaire.Completed)
-			{
-				result.Content.AvailableWeeklyQuestionnaire = true;
-				return result;
-			}
-
 			result.Content.Exercises = Exercises(user);
 			return result;
 		}
 
-		private int RelativeWeek(DateTime date)
+		public int RelativeWeek(DateTime date)
 		{
 			if (date == null)
 				throw new ArgumentNullException();
@@ -74,59 +55,30 @@ namespace PDGTAPI.Services
 			return (DateTime.Now - date).Days / 7;
 		}
 
-		private WeeklyQuestionnaire WeeklyQuestionnaire(User user)
-		{
-			if (user == null)
-				throw new ArgumentNullException();
-			/**
-			 * If the creation date is in the same week as the current date
-			 * then the weekly questionnaire is refering to the previous week.
-			 * As a rule of thumb: The weekly questionnaire alway looks at the previous week
-			 * 
-			 * This is because the entry creation is event driven. They are created
-			 * when the client requests week state and the system sees that there has not been a 
-			 * questionnaire created for the previous week
-			 **/
-			return _context.WeeklyQuestionnaire.FirstOrDefault(
-				w => w.UserId == user.Id && RelativeWeek(w.CreationTime) == 0
-			);
-		}
-
 		private List<ExerciseDTO> Exercises(User user)
 		{
 			if (user == null)
 				throw new ArgumentNullException();
 
-			/**
-			 * It's a big query...but it works ¯\_(ツ)_/¯
-			 * **/
-
 			int normalizedCurrentWeek = RelativeWeek((DateTime)user.RedCapBaseline) + 1;
 
 			List<ExerciseDTO> exercises = (
-				from UserHasExerciseWeightInTimeRange in _context.UserHasExerciseWeightInTimeRange
-					join User in _context.Users on UserHasExerciseWeightInTimeRange.UserId equals User.Id
-					join TimeRange in _context.TimeRange on UserHasExerciseWeightInTimeRange.TimeRangeId equals TimeRange.Id
+				from UserHasExerciseInTimeRange in _context.UserHasExerciseInTimeRange
+					join User in _context.Users on UserHasExerciseInTimeRange.UserId equals User.Id
+					join TimeRange in _context.TimeRange on UserHasExerciseInTimeRange.TimeRangeId equals TimeRange.Id
 						where TimeRange.StartWeek <= normalizedCurrentWeek && normalizedCurrentWeek <= TimeRange.EndWeek
-					join Exercise in _context.Exercise on UserHasExerciseWeightInTimeRange.ExerciseId equals Exercise.Id
-					join Guide in _context.Guide on Exercise.GuideId equals Guide.Id
+					join Exercise in _context.Exercise on UserHasExerciseInTimeRange.ExerciseId equals Exercise.Id
 					select new ExerciseDTO
 					{
 						Name = Exercise.ExerciseName,
-						Weight = UserHasExerciseWeightInTimeRange.UserExerciseWeight,
 						Sets = TimeRange.SetsAmount,
 						Repetitions = TimeRange.RepsAmount,
-						Guide = new GuideDTO
-						{
-							Description = Guide.GuideDescription,
-							Image = Guide.GuideImage
-						}
 					}).ToList();
 
 			return exercises;
 		}
 
-		private IEnumerable<Session> CompletedSessions(User user)
+		public IEnumerable<Session> CompletedSessions(User user)
 		{
 			if (user == null)
 				throw new ArgumentNullException();
@@ -142,16 +94,6 @@ namespace PDGTAPI.Services
 					&& s.CompletionTime >= startTime 
 					&& s.CompletionTime <= endTime
 			);
-		}
-
-		private void CreateQuestionnaire(User user)
-		{
-			var result = _context.WeeklyQuestionnaire.Add(new WeeklyQuestionnaire
-			{
-				UserId = user.Id,
-				Completed = false,
-				CreationTime = DateTime.Now
-			});
 		}
 	}
 }
