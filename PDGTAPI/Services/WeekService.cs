@@ -97,5 +97,10 @@ namespace PDGTAPI.Services
 					&& s.CompletionTime <= endTime
 			);
 		}
+
+		public bool HasMoreSessions(User user)
+		{
+			return GetCompletedSessionsInCurrentWeek(user).Count() < _maxWeekSessions;
+		}
 	}
 }
