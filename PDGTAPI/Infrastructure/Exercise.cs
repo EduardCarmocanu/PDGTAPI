@@ -7,14 +7,12 @@ namespace PDGTAPI.Infrastructure
     {
         public Exercise()
         {
-            GroupHasExerciseInTimeRange = new HashSet<GroupHasExerciseInTimeRange>();
-            UserHasExerciseInTimeRange = new HashSet<UserHasExerciseInTimeRange>();
+            TimeRangeHasExercises = new HashSet<TimeRangeHasExercise>();
         }
 
         public int Id { get; set; }
         public string ExerciseName { get; set; }
 
-        public ICollection<GroupHasExerciseInTimeRange> GroupHasExerciseInTimeRange { get; set; }
-        public ICollection<UserHasExerciseInTimeRange> UserHasExerciseInTimeRange { get; set; }
+        public ICollection<TimeRangeHasExercise> TimeRangeHasExercises { get; set; }
     }
 }

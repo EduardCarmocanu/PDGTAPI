@@ -8,9 +8,8 @@ namespace PDGTAPI.Infrastructure
     {
         public TimeRange()
         {
-            GroupHasExerciseInTimeRange = new HashSet<GroupHasExerciseInTimeRange>();
-            UserHasExerciseInTimeRange = new HashSet<UserHasExerciseInTimeRange>();
-        }
+			TimeRangeHasExercises = new HashSet<TimeRangeHasExercise>();
+		}
 
         public int Id { get; set; }
         public byte StartWeek { get; set; }
@@ -19,8 +18,9 @@ namespace PDGTAPI.Infrastructure
         public byte RepsAmount { get; set; }
 		[StringLength(2)]
 		public string RedCapIdentifier { get; set; }
+		public int RandomisationGroupID { get; set; }
+		public string RandomisationGroup { get; set; }
 
-        public ICollection<GroupHasExerciseInTimeRange> GroupHasExerciseInTimeRange { get; set; }
-        public ICollection<UserHasExerciseInTimeRange> UserHasExerciseInTimeRange { get; set; }
-    }
+		public ICollection<TimeRangeHasExercise> TimeRangeHasExercises { get; set; }
+	}
 }

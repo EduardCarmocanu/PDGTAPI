@@ -11,17 +11,37 @@ namespace PDGTAPI.Infrastructure
 	public class ApplicationDataContext : IdentityDbContext<User, IdentityRole, string>
 	{
         public virtual DbSet<Exercise> Exercise { get; set; }
-        public virtual DbSet<GroupHasExerciseInTimeRange> GroupHasExerciseInTimeRange { get; set; }
         public virtual DbSet<RandomisationGroup> RandomisationGroup { get; set; }
+		public virtual DbSet<TimeRangeHasExercise> TimeRangeHasExecise { get; set; }
         public virtual DbSet<Session> Session { get; set; }
         public virtual DbSet<TimeRange> TimeRange { get; set; }
-        public virtual DbSet<UserHasExerciseInTimeRange> UserHasExerciseInTimeRange { get; set; }
 
 		public ApplicationDataContext(DbContextOptions options) : base(options) { }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
+
+			modelBuilder.Entity<TimeRangeHasExercise>(entity =>
+			{
+				entity.HasKey(e => new { e.ExerciseId, e.TimeRangeId });
+
+				entity.Property(e => e.ExerciseId).HasColumnName("ExerciseID");
+
+				entity.Property(e => e.TimeRangeId).HasColumnName("TimeRangeID");
+
+				entity.HasOne(d => d.Exercise)
+					.WithMany(p => p.TimeRangeHasExercises)
+					.HasForeignKey(d => d.ExerciseId)
+					.OnDelete(DeleteBehavior.ClientSetNull)
+					.HasConstraintName("FK__TimeRang__HasE__73BA3083");
+
+				entity.HasOne(d => d.TimeRange)
+					.WithMany(p => p.TimeRangeHasExercises)
+					.HasForeignKey(d => d.TimeRangeId)
+					.OnDelete(DeleteBehavior.ClientSetNull)
+					.HasConstraintName("FK__TimeRang__HasE__72C60C4A");
+			});
 
 			modelBuilder.Entity<Exercise>(entity =>
 			{
@@ -30,35 +50,6 @@ namespace PDGTAPI.Infrastructure
 				entity.Property(e => e.ExerciseName)
 					.IsRequired()
 					.HasMaxLength(255);
-			});
-
-			modelBuilder.Entity<GroupHasExerciseInTimeRange>(entity =>
-			{
-				entity.HasKey(e => new { e.GroupId, e.ExerciseId, e.TimeRangeId });
-
-				entity.Property(e => e.GroupId).HasColumnName("GroupID");
-
-				entity.Property(e => e.ExerciseId).HasColumnName("ExerciseID");
-
-				entity.Property(e => e.TimeRangeId).HasColumnName("TimeRangeID");
-
-				entity.HasOne(d => d.Exercise)
-					.WithMany(p => p.GroupHasExerciseInTimeRange)
-					.HasForeignKey(d => d.ExerciseId)
-					.OnDelete(DeleteBehavior.ClientSetNull)
-					.HasConstraintName("FK__GroupHasE__Exerc__73BA3083");
-
-				entity.HasOne(d => d.Group)
-					.WithMany(p => p.GroupHasExerciseInTimeRange)
-					.HasForeignKey(d => d.GroupId)
-					.OnDelete(DeleteBehavior.ClientSetNull)
-					.HasConstraintName("FK__GroupHasE__Group__72C60C4A");
-
-				entity.HasOne(d => d.TimeRange)
-					.WithMany(p => p.GroupHasExerciseInTimeRange)
-					.HasForeignKey(d => d.TimeRangeId)
-					.OnDelete(DeleteBehavior.ClientSetNull)
-					.HasConstraintName("FK__GroupHasE__TimeR__74AE54BC");
 			});
 
 			modelBuilder.Entity<RandomisationGroup>(entity =>
@@ -83,35 +74,6 @@ namespace PDGTAPI.Infrastructure
 			modelBuilder.Entity<TimeRange>(entity =>
 			{
 				entity.Property(e => e.Id).HasColumnName("ID");
-			});
-
-			modelBuilder.Entity<UserHasExerciseInTimeRange>(entity =>
-			{
-				entity.HasKey(e => new { e.UserId, e.ExerciseId, e.TimeRangeId });
-
-				entity.Property(e => e.UserId).HasColumnName("UserID");
-
-				entity.Property(e => e.ExerciseId).HasColumnName("ExerciseID");
-
-				entity.Property(e => e.TimeRangeId).HasColumnName("TimeRangeID");
-
-				entity.HasOne(d => d.Exercise)
-					.WithMany(p => p.UserHasExerciseInTimeRange)
-					.HasForeignKey(d => d.ExerciseId)
-					.OnDelete(DeleteBehavior.ClientSetNull)
-					.HasConstraintName("FK__UserHasEx__Exerc__6EF57B66");
-
-				entity.HasOne(d => d.TimeRange)
-					.WithMany(p => p.UserHasExerciseInTimeRange)
-					.HasForeignKey(d => d.TimeRangeId)
-					.OnDelete(DeleteBehavior.ClientSetNull)
-					.HasConstraintName("FK__UserHasEx__TimeR__6FE99F9F");
-
-				entity.HasOne(d => d.User)
-					.WithMany(p => p.UserHasExerciseInTimeRange)
-					.HasForeignKey(d => d.UserId)
-					.OnDelete(DeleteBehavior.ClientSetNull)
-					.HasConstraintName("FK__UserHasEx__UserI__6E01572D");
 			});
 		}
 	}
