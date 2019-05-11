@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -73,7 +73,7 @@ namespace PDGTAPI
 
 			services.AddAuthorization(options =>
 			{
-				options.AddPolicy("Doctors", policy =>
+				options.AddPolicy("Physiotherapists", policy =>
 				{
 					policy.RequireRole(Roles.Physiotherapist, Roles.Administrator);
 				});
