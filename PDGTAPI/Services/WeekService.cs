@@ -12,8 +12,7 @@ namespace PDGTAPI.Services
 	public interface IWeekService
 	{
 		ServiceResult<WeekStateDTO> GetState(string UserName);
-		int RelativeWeek(DateTime date);
-		IEnumerable<Session> CompletedSessions(User user);
+		bool HasMoreSessions(User user);
 	}
 
 	public class WeekService : IWeekService
