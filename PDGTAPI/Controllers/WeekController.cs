@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -48,11 +48,7 @@ namespace PDGTAPI.Controllers
 			return Ok("SQS");
 		}
 
-		[HttpPost]
-		[Route("questionnaire")]
-		public ActionResult<WeeklyQuestionnaireDTO> WeeklyQuestionnaire()
-		{
-			return Ok("WQS");
+			return await _redCapService.PostSessionQuestionnaireAsync(session, User.Identity.Name);
 		}
 	}
 } 
