@@ -1,4 +1,4 @@
-﻿using PDGTAPI.DTO;
+using PDGTAPI.DTO;
 using PDGTAPI.DTOs;
 using PDGTAPI.Helpers;
 using PDGTAPI.Infrastructure;
@@ -55,24 +55,26 @@ namespace PDGTAPI.Services
 			return (DateTime.Now - date).Days / 7;
 		}
 
-		private List<ExerciseDTO> Exercises(User user)
+		private List<ExerciseDTO> GetExercises(User user)
 		{
 			if (user == null)
 				throw new ArgumentNullException();
 
-			int normalizedCurrentWeek = RelativeWeek((DateTime)user.RedCapBaseline) + 1;
+			int normalizedCurrentWeek = GetRelativeWeek((DateTime)user.RedCapBaseline) + 1;
 
 			List<ExerciseDTO> exercises = (
-				from UserHasExerciseInTimeRange in _context.UserHasExerciseInTimeRange
-					join User in _context.Users on UserHasExerciseInTimeRange.UserId equals User.Id
-					join TimeRange in _context.TimeRange on UserHasExerciseInTimeRange.TimeRangeId equals TimeRange.Id
-						where TimeRange.StartWeek <= normalizedCurrentWeek && normalizedCurrentWeek <= TimeRange.EndWeek
-					join Exercise in _context.Exercise on UserHasExerciseInTimeRange.ExerciseId equals Exercise.Id
+				from TimeRangeHasExercise in _context.TimeRangeHasExecise
+				join TimeRange in _context.TimeRange on TimeRangeHasExercise.TimeRangeId equals TimeRange.Id
+				join Exercise in _context.Exercise on TimeRangeHasExercise.ExerciseId equals Exercise.Id
+				where
+					TimeRange.StartWeek <= normalizedCurrentWeek &&
+					TimeRange.EndWeek >= normalizedCurrentWeek &&
+					TimeRange.RandomisationGroupID == user.RandomisationGroupID
 					select new ExerciseDTO
 					{
 						Name = Exercise.ExerciseName,
 						Sets = TimeRange.SetsAmount,
-						Repetitions = TimeRange.RepsAmount,
+					Repetitions = TimeRange.RepsAmount
 					}).ToList();
 
 			return exercises;
