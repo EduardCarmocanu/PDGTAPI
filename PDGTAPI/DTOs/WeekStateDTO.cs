@@ -9,7 +9,6 @@ namespace PDGTAPI.DTOs
 	public class WeekStateDTO
 	{
 		public List<ExerciseDTO> Exercises { get; set; }
-		public bool AvailableWeeklyQuestionnaire { get; set; }
 		public bool SessionsFinished { get; set; }
 		public int WeekNumber { get; set; }
 	}
