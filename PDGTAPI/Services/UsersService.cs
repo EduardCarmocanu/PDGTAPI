@@ -116,7 +116,7 @@ namespace PDGTAPI.Services
 				return result;
 			}
 
-			ServiceResult<UserInfo> redCapRecordInformationResult = _redCapService.GetRecordInformation(model.RedCapRecordId);
+			ServiceResult<UserInfo> redCapRecordInformationResult = await _redCapService.GetRecordInformationAsync(model.RedCapRecordId);
 			if (!redCapRecordInformationResult.Succeded)
 			{
 				result.ErrorMessage = redCapRecordInformationResult.ErrorMessage;
@@ -178,6 +178,4 @@ namespace PDGTAPI.Services
 			return new JwtSecurityTokenHandler().WriteToken(jwt);
 		}
 	}
-
-
 }
