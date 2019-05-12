@@ -1,93 +1,106 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using PDGTAPI.DTOs;
 using PDGTAPI.Helpers;
+using PDGTAPI.Infrastructure;
 using PDGTAPI.Models;
+using PDGTAPI.Models.Questionnaires;
 using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Exercise = PDGTAPI.Models.Exercise;
+using Session = PDGTAPI.Models.Session;
 
 namespace PDGTAPI.Services
 {
 	public interface IRedCapService
 	{
-		ServiceResult<UserInfo> GetRecordInformation(int RecordId);
+		Task<ServiceResult<UserInfo>> GetRecordInformationAsync(int RecordId);
 	}
 
 	public class RedCapService : IRedCapService
 	{
 		private readonly IConfiguration _configuration;
-		private readonly IRestClient _restClient; 
+		private readonly IWeekService _weekService;
+		private readonly ApplicationDataContext _context;
+		private readonly UserManager<User> _userManager;
 
-		public RedCapService(IConfiguration configuration, IRestClient restClient)
+
+		public RedCapService(
+			IConfiguration configuration, 
+			IWeekService weekService,
+			ApplicationDataContext context,
+			UserManager<User> userManager
+		)
 		{
 			_configuration = configuration;
-			_restClient = restClient;
-			restClient.BaseUrl = _configuration.GetValue<Uri>("RedCap:BaseEndpoint");
+			_weekService = weekService;
+			_context = context;
+			_userManager = userManager;
 		}
 
-		public ServiceResult<UserInfo> GetRecordInformation (int RecordId)
+		public async Task<ServiceResult<UserInfo>> GetRecordInformationAsync (int recordId)
 		{
 			ServiceResult<UserInfo> result = new ServiceResult<UserInfo>();
 
-			if (RecordId < 1)
+			if (recordId < 1)
 			{
 				result.ErrorMessage = "Record ID < 1 cannot exist";
 				return result;
 			}
 
-			const string Format = "json";
-			const string Content = "record";
-			const string Type = "flat";
-
-			RestRequest request = new RestRequest(Method.POST);
-			request.AddHeader("content-type", "multipart/form-data; boundary=&");
-
-			request.AddHeader("content-type", "multipart/form-data; boundary=&");
-			request.AddParameter(
-				"multipart/form-data; boundary=&",
-				"--&\r\nContent-Disposition: form-data; name=\"token\"\r\n\r\n" +
-				_configuration["RedCap:Token"] +
-				"\r\n--&\r\nContent-Disposition: form-data; name=\"content\"\r\n\r\n" +
-				Content +
-				"\r\n--&\r\nContent-Disposition: form-data; name=\"format\"\r\n\r\n" +
-				Format +
-				"\r\n--&\r\nContent-Disposition: form-data; name=\"records\"\r\n\r\n" +
-				RecordId.ToString() +
-				"\r\n--&\r\nContent-Disposition: form-data; name=\"type\"\r\n\r\n\\" +
-				Type +
-				"\r\n--&\r\nContent-Disposition: form-data; name=\"events\"\r\n\r\nbaseline_arm_1\r\n--&\r\nContent-Disposition: form-data; name=\"fields\"\r\n\r\nrecord_id, date_intervention, randomisation_group\r\n--&--",
-				ParameterType.RequestBody);
-
-			IRestResponse response = _restClient.Execute(request);
-
-			dynamic[] deserializedResponse = JsonConvert.DeserializeObject<dynamic[]>(response.Content);
-
-			try
+			using (HttpClient client = new HttpClient())
 			{
+				client.BaseAddress = _configuration.GetValue<Uri>("RedCap:BaseEndpoint");
+
+				using (MultipartFormDataContent content = new MultipartFormDataContent())
+				{
+					content.Add(new StringContent(_configuration["RedCap:Token"]), "token");
+					content.Add(new StringContent("json"), "format");
+					content.Add(new StringContent("record"), "content");
+					content.Add(new StringContent("flat"), "type");
+					content.Add(new StringContent("record_id, date_intervention, randomisation_group"), "fields");
+					content.Add(new StringContent("baseline_arm_1"), "events");
+					content.Add(new StringContent(recordId.ToString()), "records");
+
+					try
+					{
+						Task<HttpResponseMessage> message = client.PostAsync(client.BaseAddress, content);
+
+						string responseString = await message.Result.Content.ReadAsStringAsync();
+						dynamic[] deserializedResponse = JsonConvert.DeserializeObject<dynamic[]>(responseString);
+
 				if (deserializedResponse.Length < 1)
 				{
 					result.ErrorMessage = "Record Does not exist";
 					return result;
 				}
 
-				string recordId = deserializedResponse[0]["record_id"];
-				string baselineDate = deserializedResponse[0]["date_intervention"];
-				string randomisationGroup = deserializedResponse[0]["randomisation_group"];
+						string responseRecordId = deserializedResponse[0]["record_id"];
+						string responseBaselineDate = deserializedResponse[0]["date_intervention"];
+						string responseRandomisationGroup = deserializedResponse[0]["randomisation_group"];
 
-				if (randomisationGroup.Length < 1)
+						if (string.IsNullOrEmpty(responseRandomisationGroup))
 				{
 					result.ErrorMessage = "Record does not have a set randomisation group";
 					return result;
 				}
 
+						if (string.IsNullOrEmpty(responseBaselineDate))
+						{
+							result.ErrorMessage = "Record does not have a set intervention date";
+							return result;
+						}
+
 				result.Content = new UserInfo
 				{
-					RecordId = int.Parse(recordId),
-					RandomisationGroup = randomisationGroup,
-					BaselineDate = DateTime.Parse(baselineDate)
+							RecordId = int.Parse(responseRecordId),
+							RandomisationGroup = responseRandomisationGroup,
+							BaselineDate = DateTime.Parse(responseBaselineDate).ToUniversalTime()
 				};
 				result.Succeded = true;
 
