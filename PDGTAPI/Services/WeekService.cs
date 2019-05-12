@@ -1,4 +1,4 @@
-using PDGTAPI.DTO;
+﻿using PDGTAPI.DTO;
 using PDGTAPI.DTOs;
 using PDGTAPI.Helpers;
 using PDGTAPI.Infrastructure;
@@ -55,7 +55,7 @@ namespace PDGTAPI.Services
 			if (date == null)
 				throw new ArgumentNullException();
 
-			return (DateTime.Now - date).Days / 7;
+			return (DateTime.Now - date).Days / 7;	
 		}
 
 		private List<ExerciseDTO> GetExercises(User user)
@@ -73,12 +73,12 @@ namespace PDGTAPI.Services
 					TimeRange.StartWeek <= normalizedCurrentWeek &&
 					TimeRange.EndWeek >= normalizedCurrentWeek &&
 					TimeRange.RandomisationGroupID == user.RandomisationGroupID
-					select new ExerciseDTO
-					{
-						Name = Exercise.ExerciseName,
-						Sets = TimeRange.SetsAmount,
+				select new ExerciseDTO
+				{
+					Name = Exercise.ExerciseName,
+					Sets = TimeRange.SetsAmount,
 					Repetitions = TimeRange.RepsAmount
-					}).ToList();
+				}).ToList();
 
 			return exercises;
 		}
@@ -116,7 +116,7 @@ namespace PDGTAPI.Services
 		public bool PatientCanTrain(IEnumerable<Session> sessions)
 		{
 			if (sessions.Count() < _maxWeekSessions && sessions.FirstOrDefault(s => s.CompletionTime.Day == DateTime.Now.Day) == null)
-		{
+			{
 				return true;
 			}
 
