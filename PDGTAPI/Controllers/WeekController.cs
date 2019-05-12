@@ -40,7 +40,7 @@ namespace PDGTAPI.Controllers
 
 		[HttpPost]
 		[Route("sessions/questionnaire")]
-		public async Task<ActionResult<string>> PostSessionsQuestionnaire([FromBody] Session session)
+		public async Task<ActionResult<string>> PostSessionsQuestionnaireAsync([FromBody] Session session)
 		{
 			if (!ModelState.IsValid)
 				return BadRequest();
