@@ -40,9 +40,9 @@ namespace PDGTAPI.Controllers
 
 			ServiceResult<string> authenticationResult = await _usersService.AuthenticateAsync(model);
 			if (!authenticationResult.Succeded)
-				return BadRequest(authenticationResult.ErrorMessage);
+				return Unauthorized();
 
-			return Ok(authenticationResult);
+			return Ok(authenticationResult.Content);
 		}
 
 		[HttpPost]
@@ -56,7 +56,7 @@ namespace PDGTAPI.Controllers
 			if (!registrationResult.Succeded)
 				return BadRequest(registrationResult.ErrorMessage);
 
-			return Ok(registrationResult);
+			return Ok();
 		}
 
 		[HttpPost]
@@ -69,7 +69,7 @@ namespace PDGTAPI.Controllers
 			if (!registrationResult.Succeded)
 				return BadRequest(registrationResult.ErrorMessage);
 
-			return Ok(registrationResult);
+			return Ok();
 		}
 	}
 }
