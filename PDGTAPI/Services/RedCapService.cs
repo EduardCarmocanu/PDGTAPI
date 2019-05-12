@@ -6,7 +6,6 @@ using PDGTAPI.Helpers;
 using PDGTAPI.Infrastructure;
 using PDGTAPI.Models;
 using PDGTAPI.Models.Questionnaires;
-using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;

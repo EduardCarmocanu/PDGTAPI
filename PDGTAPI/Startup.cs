@@ -13,7 +13,6 @@ using Microsoft.IdentityModel.Tokens;
 using PDGTAPI.Helpers;
 using PDGTAPI.Infrastructure;
 using PDGTAPI.Services;
-using RestSharp;
 
 namespace PDGTAPI
 {
@@ -32,7 +31,6 @@ namespace PDGTAPI
 			services.AddSingleton(Configuration);
 
 			services.AddTransient<IRedCapService, RedCapService>();
-			services.AddTransient<IRestClient, RestClient>();
 			services.AddTransient<IUsersService, UsersService>();
 			services.AddTransient<IWeekService, WeekService>();
 
