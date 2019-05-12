@@ -58,18 +58,5 @@ namespace PDGTAPI.Controllers
 
 			return Ok();
 		}
-
-		[HttpPost]
-		[Route("register/patient")]
-		public async Task<IActionResult> RegisterPatientAsync([FromBody] PatientRegistration model)
-		{
-			if (!ModelState.IsValid) return BadRequest(ModelState);
-
-			ServiceResult<string> registrationResult = await _usersService.RegisterPatientAsync(model);
-			if (!registrationResult.Succeded)
-				return BadRequest(registrationResult.ErrorMessage);
-
-			return Ok();
-		}
 	}
 }

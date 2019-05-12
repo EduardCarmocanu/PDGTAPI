@@ -16,6 +16,26 @@ namespace PDGTAPI.Controllers
 	[Authorize(Policy = "Patients")]
     public class PatientsController : ControllerBase
     {
+		private readonly IUsersService _usersService;
+
+		public PatientsController(IUsersService usersService)
+		{
+			_usersService = usersService;
+		}
+
+		[HttpPost]
+		[Route("/register")]
+		[Authorize(Policy = "Physiotherapists")]
+		public async Task<IActionResult> RegisterPatientAsync([FromBody] PatientRegistration model)
+		{
+			if (!ModelState.IsValid) return BadRequest(ModelState);
+
+			ServiceResult<string> registrationResult = await _usersService.RegisterPatientAsync(model);
+			if (!registrationResult.Succeded)
+				return BadRequest(registrationResult.ErrorMessage);
+
+			return Ok();
+		}
 
 		// GET: api/Patients
 		[HttpGet]
