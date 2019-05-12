@@ -50,8 +50,7 @@ namespace PDGTAPI
 				options.UseSqlServer(Configuration.GetConnectionString("DefaultConnectionString"));
 			});
 				
-			services.AddIdentity<User, IdentityRole>()
-				.AddEntityFrameworkStores<ApplicationDataContext>();
+			services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<ApplicationDataContext>();
 
 			services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 				.AddJwtBearer(options =>
