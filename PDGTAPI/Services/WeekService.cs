@@ -12,7 +12,10 @@ namespace PDGTAPI.Services
 	public interface IWeekService
 	{
 		ServiceResult<WeekStateDTO> GetState(string UserName);
-		bool HasMoreSessions(User user);
+		int GetRelativeWeek(DateTime date);
+		IEnumerable<Session> GetCompletedSessionsInCurrentWeek(User user);
+		bool PatientCanTrain(User user);
+		bool PatientCanTrain(IEnumerable<Session> sessions);
 	}
 
 	public class WeekService : IWeekService
@@ -34,19 +37,20 @@ namespace PDGTAPI.Services
 				Succeded = true,
 				Content = new WeekStateDTO()
 			};
+
 			User user = _context.Users.FirstOrDefault(x => x.UserName == UserName);
 
-			if (CompletedSessions(user).Count() >= _maxWeekSessions)
+			if (PatientCanTrain(user))
 			{
-				result.Content.SessionsFinished = true;
+				result.Content.Exercises = GetExercises(user);
 				return result;
 			}
 
-			result.Content.Exercises = Exercises(user);
+			result.Content.SessionsFinished = true;
 			return result;
 		}
 
-		public int RelativeWeek(DateTime date)
+		public int GetRelativeWeek(DateTime date)
 		{
 			if (date == null)
 				throw new ArgumentNullException();
@@ -79,13 +83,13 @@ namespace PDGTAPI.Services
 			return exercises;
 		}
 
-		public IEnumerable<Session> CompletedSessions(User user)
+		public IEnumerable<Session> GetCompletedSessionsInCurrentWeek(User user)
 		{
 			if (user == null)
 				throw new ArgumentNullException();
 
 			DateTime userBaseline = (DateTime)user.RedCapBaseline;
-			int currentRelativeWeek = RelativeWeek(userBaseline);
+			int currentRelativeWeek = GetRelativeWeek(userBaseline);
 
 			DateTime startTime = userBaseline.AddDays(7 * currentRelativeWeek);
 			DateTime endTime = startTime.AddDays(7);
@@ -97,9 +101,26 @@ namespace PDGTAPI.Services
 			);
 		}
 
-		public bool HasMoreSessions(User user)
+		public bool PatientCanTrain(User user)
 		{
-			return GetCompletedSessionsInCurrentWeek(user).Count() < _maxWeekSessions;
+			IEnumerable<Session> sessions = GetCompletedSessionsInCurrentWeek(user);
+
+			if (sessions.Count() < _maxWeekSessions && sessions.FirstOrDefault(s => s.CompletionTime.Day == DateTime.Now.Day) == null)
+			{
+				return true;
+			}
+
+			return false;
+		}
+
+		public bool PatientCanTrain(IEnumerable<Session> sessions)
+		{
+			if (sessions.Count() < _maxWeekSessions && sessions.FirstOrDefault(s => s.CompletionTime.Day == DateTime.Now.Day) == null)
+		{
+				return true;
+			}
+
+			return false;
 		}
 	}
 }
