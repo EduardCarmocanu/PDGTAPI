@@ -8,13 +8,13 @@ namespace PDGTAPI.Infrastructure
         public RandomisationGroup()
         {
             Users = new HashSet<User>();
-            GroupHasExerciseInTimeRange = new HashSet<GroupHasExerciseInTimeRange>();
-        }
+			TimeRanges = new HashSet<TimeRange>();
+		}
 
         public int Id { get; set; }
         public string GroupName { get; set; }
 
         public ICollection<User> Users { get; set; }
-        public ICollection<GroupHasExerciseInTimeRange> GroupHasExerciseInTimeRange { get; set; }
-    }
+		public ICollection<TimeRange> TimeRanges { get; set; }
+	}
 }

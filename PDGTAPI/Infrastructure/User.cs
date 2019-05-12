@@ -8,19 +8,11 @@ namespace PDGTAPI.Infrastructure
 {
 	public class User : IdentityUser
 	{
-		public User()
-		{
-			GroupHasExerciseInTimeRange = new HashSet<GroupHasExerciseInTimeRange>();
-			UserHasExerciseWeightInTimeRange = new HashSet<UserHasExerciseWeightInTimeRange>();
-		}
 
 		public int? RedCapRecordId { get; set; }
 		public DateTime? RedCapBaseline { get; set; }
 		public int? RandomisationGroupID { get; set; }
 
-		public ICollection<GroupHasExerciseInTimeRange> GroupHasExerciseInTimeRange { get; set; }
-		public ICollection<UserHasExerciseWeightInTimeRange> UserHasExerciseWeightInTimeRange { get; set; }
 		public ICollection<Session> Sessions { get; set; }
-		public ICollection<WeeklyQuestionnaire> WeeklyQuestionnaires { get; set; }
 	}
 }

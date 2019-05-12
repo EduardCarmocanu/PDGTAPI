@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PDGTAPI.DTOs;
 using PDGTAPI.Helpers;
-//using PDGTAPI.Infrastructure;
+using PDGTAPI.Models;
 using PDGTAPI.Services;
 
 namespace PDGTAPI.Controllers
@@ -28,31 +28,31 @@ namespace PDGTAPI.Controllers
 
 		[HttpGet]
 		[Route("state")]
-		public ActionResult<WeekStateDTO> State()
+		public ActionResult State()
 		{
 			WeekStateDTO result = new WeekStateDTO();
 			ServiceResult<WeekStateDTO> weekState = _weekService.GetState(User.Identity.Name);
 
-			if (weekState.Succeded)
-			{
-				result = weekState.Content;
-			}
+			result = weekState.Content;
 
 			return Ok(result);
 		}
 
 		[HttpPost]
 		[Route("sessions/questionnaire")]
-		public ActionResult<SessionQuestionnaireDTO> SessionsQuestionnaire()
+		public async Task<ActionResult<string>> PostSessionsQuestionnaireAsync([FromBody] Session session)
 		{
-			return Ok("SQS");
-		}
+			if (!ModelState.IsValid)
+				return BadRequest();
 
-		[HttpPost]
-		[Route("questionnaire")]
-		public ActionResult<WeeklyQuestionnaireDTO> WeeklyQuestionnaire()
-		{
-			return Ok("WQS");
+			ServiceResult<string> result = await _redCapService.PostSessionQuestionnaireAsync(session, User.Identity.Name);
+
+			if (result.Succeded)
+			{
+				return Ok(result.Content);
+			}
+
+			return Forbid(result.ErrorMessage);
 		}
 	}
 } 

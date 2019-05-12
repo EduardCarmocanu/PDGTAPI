@@ -4,13 +4,15 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PDGTAPI.Models.Questionnaires.WeeklyQuestionnaire
+namespace PDGTAPI.Models
 {
-	public class Painkillers
+	public class Set
 	{
 		[Required]
-		public DueToTraining DueToTraining { get; set; }
+		public int Repetitions { get; set; }
 		[Required]
-		public DueToOther DueToOther { get; set; }
+		public bool Tired { get; set; }
+		[Required]
+		public int Weight { get; set; }
 	}
 }

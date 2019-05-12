@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -47,13 +47,10 @@ namespace PDGTAPI
 			});
 			services.AddDbContext<ApplicationDataContext>(options =>
 			{
-				// USE SQL SERVER FOR PRODUCTION
-				//options.UseInMemoryDatabase("PDGTAPI");
 				options.UseSqlServer(Configuration.GetConnectionString("DefaultConnectionString"));
 			});
 				
-			services.AddIdentity<User, IdentityRole>()
-				.AddEntityFrameworkStores<ApplicationDataContext>();
+			services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<ApplicationDataContext>();
 
 			services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 				.AddJwtBearer(options =>
@@ -73,9 +70,9 @@ namespace PDGTAPI
 
 			services.AddAuthorization(options =>
 			{
-				options.AddPolicy("Doctors", policy =>
+				options.AddPolicy("Physiotherapists", policy =>
 				{
-					policy.RequireRole(Roles.Doctor, Roles.Administrator);
+					policy.RequireRole(Roles.Physiotherapist, Roles.Administrator);
 				});
 				options.AddPolicy("Patients", policy =>
 				{

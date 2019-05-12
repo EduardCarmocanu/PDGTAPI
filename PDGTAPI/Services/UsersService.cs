@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
@@ -19,7 +19,7 @@ namespace PDGTAPI.Services
 	{
 		Task<ServiceResult<string>> AuthenticateAsync(UserLogin model);
 		Task<ServiceResult<string>> RegisterPatientAsync(PatientRegistration model);
-		Task<ServiceResult<string>> RegisterDoctorAsync(DoctorRegistration model);
+		Task<ServiceResult<string>> RegisterPhysiotherapistAsync(DoctorRegistration model);
 	}
 	
 	public class UsersService : IUsersService
@@ -73,7 +73,7 @@ namespace PDGTAPI.Services
 			return result;
 		}
 
-		public async Task<ServiceResult<string>> RegisterDoctorAsync(DoctorRegistration model)
+		public async Task<ServiceResult<string>> RegisterPhysiotherapistAsync(DoctorRegistration model)
 		{
 			if (model == null)
 				throw new ArgumentNullException();
@@ -89,7 +89,7 @@ namespace PDGTAPI.Services
 			var identityResult = await _userManager.CreateAsync(user, model.Password);
 			if (identityResult.Succeeded)
 			{
-				await _userManager.AddToRoleAsync(user, Roles.Doctor);
+				await _userManager.AddToRoleAsync(user, Roles.Physiotherapist);
 				result.Content = GetToken(user);
 				result.Succeded = true;
 
@@ -116,7 +116,7 @@ namespace PDGTAPI.Services
 				return result;
 			}
 
-			ServiceResult<UserInfo> redCapRecordInformationResult = _redCapService.GetRecordInformation(model.RedCapRecordId);
+			ServiceResult<UserInfo> redCapRecordInformationResult = await _redCapService.GetRecordInformationAsync(model.RedCapRecordId);
 			if (!redCapRecordInformationResult.Succeded)
 			{
 				result.ErrorMessage = redCapRecordInformationResult.ErrorMessage;
@@ -178,6 +178,4 @@ namespace PDGTAPI.Services
 			return new JwtSecurityTokenHandler().WriteToken(jwt);
 		}
 	}
-
-
 }

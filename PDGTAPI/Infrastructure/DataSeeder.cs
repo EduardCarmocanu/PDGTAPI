@@ -25,15 +25,15 @@ namespace PDGTAPI.Infrastructure
 		{
 			if (!_roleManager.Roles.Any())
 			{
-				_roleManager.CreateAsync(new IdentityRole("Administrator")).Wait();
-				_roleManager.CreateAsync(new IdentityRole("Doctor")).Wait();
-				_roleManager.CreateAsync(new IdentityRole("Patient")).Wait();
+				_roleManager.CreateAsync(new IdentityRole(Roles.Administrator)).Wait();
+				_roleManager.CreateAsync(new IdentityRole(Roles.Physiotherapist)).Wait();
+				_roleManager.CreateAsync(new IdentityRole(Roles.Patient)).Wait();
 			}
 
 			if (!_context.RandomisationGroup.Any())
 			{
-				RandomisationGroup control = new RandomisationGroup() { GroupName = "A" };
-				RandomisationGroup intervention = new RandomisationGroup() { GroupName = "B" };
+				RandomisationGroup control = new RandomisationGroup() { GroupName = Groups.Intervention };
+				RandomisationGroup intervention = new RandomisationGroup() { GroupName = Groups.Control };
 
 				_context.RandomisationGroup.AddAsync(control).Wait();
 				_context.RandomisationGroup.AddAsync(intervention).Wait();
@@ -44,9 +44,12 @@ namespace PDGTAPI.Infrastructure
 			{
 				var randomisationGroup = _context.RandomisationGroup.FirstOrDefault(x => x.GroupName == Groups.Intervention);
 				DateTime baselineDate = new DateTime(
-					DateTime.Now.Year,
-					DateTime.Now.Month, 
-					DateTime.Now.Day, 0, 0, 0
+					DateTime.UtcNow.Year,
+					DateTime.UtcNow.Month, 
+					DateTime.UtcNow.Day, 
+					0, // Hours
+					0, // Minutes
+					0  // Seconds
 				);
 
 				User patient = new User()
@@ -65,13 +68,13 @@ namespace PDGTAPI.Infrastructure
 
 				User doctor = new User()
 				{
-					UserName = "doctor@email.com",
-					Email = "doctor@email.com",
+					UserName = "physio@email.com",
+					Email = "physio@email.com",
 				};
 				IdentityResult doctorResult = _userManager.CreateAsync(doctor, "Password123!").Result;
 				if (doctorResult.Succeeded)
 				{
-					_userManager.AddToRoleAsync(doctor, Roles.Doctor).Wait();
+					_userManager.AddToRoleAsync(doctor, Roles.Physiotherapist).Wait();
 				}
 
 				User admin = new User()

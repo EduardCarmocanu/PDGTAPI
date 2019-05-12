@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace PDGTAPI.Models
 {
-	public class Session <TPostSessionQuestionnaire, TSet>
+	public class Session
 	{
 		[Required]
-		public Exercise<TSet>[] Exercises { get; set; }
+		public List<Exercise> Exercises { get; set; }
 		[Required]
-		public PreSessionQuestionnaire PreQuestionaire { get; set; }
+		public PreSessionQuestionnaire PreQuestionnaire { get; set; }
 		[Required]
-		public TPostSessionQuestionnaire PostQuestionnaire { get; set; }
+		public PostSessionQuestionnaire PostQuestionnaire { get; set; }
 	}
 }

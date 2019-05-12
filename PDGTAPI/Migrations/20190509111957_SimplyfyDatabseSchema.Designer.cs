@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PDGTAPI.Infrastructure;
 
 namespace PDGTAPI.Migrations
 {
     [DbContext(typeof(ApplicationDataContext))]
-    partial class ApplicationDataContextModelSnapshot : ModelSnapshot
+    [Migration("20190509111957_SimplyfyDatabseSchema")]
+    partial class SimplyfyDatabseSchema
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -145,6 +147,26 @@ namespace PDGTAPI.Migrations
                     b.ToTable("Exercise");
                 });
 
+            modelBuilder.Entity("PDGTAPI.Infrastructure.GroupHasExerciseInTimeRange", b =>
+                {
+                    b.Property<int>("GroupId")
+                        .HasColumnName("GroupID");
+
+                    b.Property<int>("ExerciseId")
+                        .HasColumnName("ExerciseID");
+
+                    b.Property<int>("TimeRangeId")
+                        .HasColumnName("TimeRangeID");
+
+                    b.HasKey("GroupId", "ExerciseId", "TimeRangeId");
+
+                    b.HasIndex("ExerciseId");
+
+                    b.HasIndex("TimeRangeId");
+
+                    b.ToTable("GroupHasExerciseInTimeRange");
+                });
+
             modelBuilder.Entity("PDGTAPI.Infrastructure.RandomisationGroup", b =>
                 {
                     b.Property<int>("Id")
@@ -191,8 +213,6 @@ namespace PDGTAPI.Migrations
 
                     b.Property<byte>("EndWeek");
 
-                    b.Property<int>("RandomisationGroupID");
-
                     b.Property<string>("RedCapIdentifier")
                         .HasMaxLength(2);
 
@@ -204,24 +224,7 @@ namespace PDGTAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RandomisationGroupID");
-
                     b.ToTable("TimeRange");
-                });
-
-            modelBuilder.Entity("PDGTAPI.Infrastructure.TimeRangeHasExercise", b =>
-                {
-                    b.Property<int>("ExerciseId")
-                        .HasColumnName("ExerciseID");
-
-                    b.Property<int>("TimeRangeId")
-                        .HasColumnName("TimeRangeID");
-
-                    b.HasKey("ExerciseId", "TimeRangeId");
-
-                    b.HasIndex("TimeRangeId");
-
-                    b.ToTable("TimeRangeHasExecise");
                 });
 
             modelBuilder.Entity("PDGTAPI.Infrastructure.User", b =>
@@ -328,33 +331,30 @@ namespace PDGTAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
+            modelBuilder.Entity("PDGTAPI.Infrastructure.GroupHasExerciseInTimeRange", b =>
+                {
+                    b.HasOne("PDGTAPI.Infrastructure.Exercise", "Exercise")
+                        .WithMany("GroupHasExerciseInTimeRange")
+                        .HasForeignKey("ExerciseId")
+                        .HasConstraintName("FK__GroupHasE__Exerc__73BA3083");
+
+                    b.HasOne("PDGTAPI.Infrastructure.RandomisationGroup", "Group")
+                        .WithMany("GroupHasExerciseInTimeRange")
+                        .HasForeignKey("GroupId")
+                        .HasConstraintName("FK__GroupHasE__Group__72C60C4A");
+
+                    b.HasOne("PDGTAPI.Infrastructure.TimeRange", "TimeRange")
+                        .WithMany("GroupHasExerciseInTimeRange")
+                        .HasForeignKey("TimeRangeId")
+                        .HasConstraintName("FK__GroupHasE__TimeR__74AE54BC");
+                });
+
             modelBuilder.Entity("PDGTAPI.Infrastructure.Session", b =>
                 {
                     b.HasOne("PDGTAPI.Infrastructure.User", "User")
                         .WithMany("Sessions")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("PDGTAPI.Infrastructure.TimeRange", b =>
-                {
-                    b.HasOne("PDGTAPI.Infrastructure.RandomisationGroup")
-                        .WithMany("TimeRanges")
-                        .HasForeignKey("RandomisationGroupID")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("PDGTAPI.Infrastructure.TimeRangeHasExercise", b =>
-                {
-                    b.HasOne("PDGTAPI.Infrastructure.Exercise", "Exercise")
-                        .WithMany("TimeRangeHasExercises")
-                        .HasForeignKey("ExerciseId")
-                        .HasConstraintName("FK__TimeRang__HasE__73BA3083");
-
-                    b.HasOne("PDGTAPI.Infrastructure.TimeRange", "TimeRange")
-                        .WithMany("TimeRangeHasExercises")
-                        .HasForeignKey("TimeRangeId")
-                        .HasConstraintName("FK__TimeRang__HasE__72C60C4A");
                 });
 
             modelBuilder.Entity("PDGTAPI.Infrastructure.User", b =>

@@ -12,6 +12,10 @@ namespace PDGTAPI.Services
 	public interface IWeekService
 	{
 		ServiceResult<WeekStateDTO> GetState(string UserName);
+		int GetRelativeWeek(DateTime date);
+		IEnumerable<Session> GetCompletedSessionsInCurrentWeek(User user);
+		bool PatientCanTrain(User user);
+		bool PatientCanTrain(IEnumerable<Session> sessions);
 	}
 
 	public class WeekService : IWeekService
@@ -33,102 +37,59 @@ namespace PDGTAPI.Services
 				Succeded = true,
 				Content = new WeekStateDTO()
 			};
+
 			User user = _context.Users.FirstOrDefault(x => x.UserName == UserName);
 
-			if (CompletedSessions(user).Count() >= _maxWeekSessions)
+			if (PatientCanTrain(user))
 			{
-				result.Content.SessionsFinished = true;
+				result.Content.Exercises = GetExercises(user);
 				return result;
 			}
 
-			if (RelativeWeek((DateTime)user.RedCapBaseline) == 0)
-			{
-				result.Content.Exercises = Exercises(user);
-				return result;
-			}
-
-			WeeklyQuestionnaire weeklyQuestionnaire = WeeklyQuestionnaire(user);
-
-			if (weeklyQuestionnaire == null)
-			{
-				CreateQuestionnaire(user);
-				result.Content.AvailableWeeklyQuestionnaire = true;
-				return result;
-			}
-
-			if (!weeklyQuestionnaire.Completed)
-			{
-				result.Content.AvailableWeeklyQuestionnaire = true;
-				return result;
-			}
-
-			result.Content.Exercises = Exercises(user);
+			result.Content.SessionsFinished = true;
 			return result;
 		}
 
-		private int RelativeWeek(DateTime date)
+		public int GetRelativeWeek(DateTime date)
 		{
 			if (date == null)
 				throw new ArgumentNullException();
 
-			return (DateTime.Now - date).Days / 7;
+			return (DateTime.Now - date).Days / 7;	
 		}
 
-		private WeeklyQuestionnaire WeeklyQuestionnaire(User user)
-		{
-			if (user == null)
-				throw new ArgumentNullException();
-			/**
-			 * If the creation date is in the same week as the current date
-			 * then the weekly questionnaire is refering to the previous week.
-			 * As a rule of thumb: The weekly questionnaire alway looks at the previous week
-			 * 
-			 * This is because the entry creation is event driven. They are created
-			 * when the client requests week state and the system sees that there has not been a 
-			 * questionnaire created for the previous week
-			 **/
-			return _context.WeeklyQuestionnaire.FirstOrDefault(
-				w => w.UserId == user.Id && RelativeWeek(w.CreationTime) == 0
-			);
-		}
-
-		private List<ExerciseDTO> Exercises(User user)
+		private List<ExerciseDTO> GetExercises(User user)
 		{
 			if (user == null)
 				throw new ArgumentNullException();
 
-			/**
-			 * It's a big query...but it works ¯\_(ツ)_/¯
-			 * **/
+			int normalizedCurrentWeek = GetRelativeWeek((DateTime)user.RedCapBaseline) + 1;
+
 			List<ExerciseDTO> exercises = (
-				from UserHasExerciseWeightInTimeRange in _context.UserHasExerciseWeightInTimeRange
-					join Exercise in _context.Exercise on UserHasExerciseWeightInTimeRange.ExerciseId equals Exercise.Id
-					join User in _context.Users on UserHasExerciseWeightInTimeRange.UserId equals User.Id
-					join Guide in _context.Guide on Exercise.GuideId equals Guide.Id
-					join TimeRange in _context.TimeRange on UserHasExerciseWeightInTimeRange.TimeRangeId equals TimeRange.Id
-					select new ExerciseDTO
-					{
-						Name = Exercise.ExerciseName,
-						Weight = UserHasExerciseWeightInTimeRange.UserExerciseWeight,
-						Sets = TimeRange.SetsAmount,
-						Repetitions = TimeRange.RepsAmount,
-						Guide = new GuideDTO
-						{
-							Description = Guide.GuideDescription,
-							Image = Guide.GuideImage
-						}
-					}).ToList();
+				from TimeRangeHasExercise in _context.TimeRangeHasExecise
+				join TimeRange in _context.TimeRange on TimeRangeHasExercise.TimeRangeId equals TimeRange.Id
+				join Exercise in _context.Exercise on TimeRangeHasExercise.ExerciseId equals Exercise.Id
+				where
+					TimeRange.StartWeek <= normalizedCurrentWeek &&
+					TimeRange.EndWeek >= normalizedCurrentWeek &&
+					TimeRange.RandomisationGroupID == user.RandomisationGroupID
+				select new ExerciseDTO
+				{
+					Name = Exercise.ExerciseName,
+					Sets = TimeRange.SetsAmount,
+					Repetitions = TimeRange.RepsAmount
+				}).ToList();
 
 			return exercises;
 		}
 
-		private IEnumerable<Session> CompletedSessions(User user)
+		public IEnumerable<Session> GetCompletedSessionsInCurrentWeek(User user)
 		{
 			if (user == null)
 				throw new ArgumentNullException();
 
 			DateTime userBaseline = (DateTime)user.RedCapBaseline;
-			int currentRelativeWeek = RelativeWeek(userBaseline);
+			int currentRelativeWeek = GetRelativeWeek(userBaseline);
 
 			DateTime startTime = userBaseline.AddDays(7 * currentRelativeWeek);
 			DateTime endTime = startTime.AddDays(7);
@@ -140,14 +101,26 @@ namespace PDGTAPI.Services
 			);
 		}
 
-		private void CreateQuestionnaire(User user)
+		public bool PatientCanTrain(User user)
 		{
-			var result = _context.WeeklyQuestionnaire.Add(new WeeklyQuestionnaire
+			IEnumerable<Session> sessions = GetCompletedSessionsInCurrentWeek(user);
+
+			if (sessions.Count() < _maxWeekSessions && sessions.FirstOrDefault(s => s.CompletionTime.Day == DateTime.Now.Day) == null)
 			{
-				UserId = user.Id,
-				Completed = false,
-				CreationTime = DateTime.Now
-			});
+				return true;
+			}
+
+			return false;
+		}
+
+		public bool PatientCanTrain(IEnumerable<Session> sessions)
+		{
+			if (sessions.Count() < _maxWeekSessions && sessions.FirstOrDefault(s => s.CompletionTime.Day == DateTime.Now.Day) == null)
+			{
+				return true;
+			}
+
+			return false;
 		}
 	}
 }
