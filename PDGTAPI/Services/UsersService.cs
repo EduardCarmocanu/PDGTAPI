@@ -18,7 +18,7 @@ namespace PDGTAPI.Services
 	public interface IUsersService
 	{
 		Task<ServiceResult<string>> AuthenticateAsync(UserLogin model);
-		Task<ServiceResult<string>> RegisterPatientAsync(PatientRegistration model);
+		Task<ServiceResult<string>> RegisterPatientAsync(PatientRegistration model, string physioUserName);
 		Task<ServiceResult<string>> RegisterPhysiotherapistAsync(DoctorRegistration model);
 	}
 	
@@ -100,7 +100,7 @@ namespace PDGTAPI.Services
 			return result;
 		}
 
-		public async Task<ServiceResult<string>> RegisterPatientAsync(PatientRegistration model)
+		public async Task<ServiceResult<string>> RegisterPatientAsync(PatientRegistration model, string physioUserName)
 		{
 			if (model == null)
 				throw new ArgumentNullException();
@@ -127,13 +127,16 @@ namespace PDGTAPI.Services
 				x => x.GroupName == redCapRecordInformationResult.Content.RandomisationGroup
 			).Id;
 
+			string doctorId = _context.Users.FirstOrDefault(x => x.UserName == physioUserName).Id;
+
 			User user = new User
 			{
 				UserName = model.Email,
 				Email = model.Email,
 				RedCapRecordId = redCapRecordInformationResult.Content.RecordId,
 				RandomisationGroupID = randomisationGroupId,
-				RedCapBaseline = redCapRecordInformationResult.Content.BaselineDate
+				RedCapBaseline = redCapRecordInformationResult.Content.BaselineDate,
+				DoctorId = doctorId
 			};
 
 			var identityResult = await _userManager.CreateAsync(user, model.Password);
@@ -146,7 +149,10 @@ namespace PDGTAPI.Services
 				return result;
 			}
 
-			result.ErrorMessage = "Could not register patient";
+			foreach (var error in identityResult.Errors)
+			{
+				result.ErrorMessage = error.Description + "\n\r";
+			}
 			return result;
 		}
 

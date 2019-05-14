@@ -13,7 +13,6 @@ namespace PDGTAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-	[Authorize(Policy = "Patients")]
     public class PatientsController : ControllerBase
     {
 		private readonly IUsersService _usersService;
@@ -24,13 +23,13 @@ namespace PDGTAPI.Controllers
 		}
 
 		[HttpPost]
-		[Route("/register")]
+		[Route("register")]
 		[Authorize(Policy = "Physiotherapists")]
 		public async Task<IActionResult> RegisterPatientAsync([FromBody] PatientRegistration model)
 		{
 			if (!ModelState.IsValid) return BadRequest(ModelState);
 
-			ServiceResult<string> registrationResult = await _usersService.RegisterPatientAsync(model);
+			ServiceResult<string> registrationResult = await _usersService.RegisterPatientAsync(model, User.Identity.Name);
 			if (!registrationResult.Succeded)
 				return BadRequest(registrationResult.ErrorMessage);
 
