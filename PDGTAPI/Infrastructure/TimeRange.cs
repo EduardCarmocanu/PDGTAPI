@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PDGTAPI.Infrastructure
 {
@@ -19,8 +20,8 @@ namespace PDGTAPI.Infrastructure
 		[StringLength(2)]
 		public string RedCapIdentifier { get; set; }
 		public int RandomisationGroupID { get; set; }
-		public string RandomisationGroup { get; set; }
 
 		public ICollection<TimeRangeHasExercise> TimeRangeHasExercises { get; set; }
+		public RandomisationGroup RandomisationGroup { get; set; }
 	}
 }

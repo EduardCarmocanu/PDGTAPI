@@ -22,6 +22,18 @@ namespace PDGTAPI.Infrastructure
 		{
 			base.OnModelCreating(modelBuilder);
 
+			modelBuilder.Entity<User>(entity =>
+			{
+				entity.Property(e => e.DoctorId)
+					.HasColumnName("DoctorID")
+					.HasMaxLength(450);
+
+				entity.HasOne(d => d.Doctor)
+					.WithMany(p => p.InverseDoctor)
+					.HasForeignKey(d => d.DoctorId)
+					.HasConstraintName("FK__AspNetUse__Docto__01142BA1");
+			});
+
 			modelBuilder.Entity<TimeRangeHasExercise>(entity =>
 			{
 				entity.HasKey(e => new { e.ExerciseId, e.TimeRangeId });
@@ -74,6 +86,8 @@ namespace PDGTAPI.Infrastructure
 			modelBuilder.Entity<TimeRange>(entity =>
 			{
 				entity.Property(e => e.Id).HasColumnName("ID");
+
+				entity.Property(e => e.RandomisationGroupID).IsRequired();
 			});
 		}
 	}
