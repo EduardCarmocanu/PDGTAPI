@@ -11,6 +11,8 @@
     <Compile Remove="Migrations\20190504173414_SessionRequireUserId.Designer.cs" />
     <Compile Remove="Migrations\20190504180709_WeeklyQuestionnaireTable.cs" />
     <Compile Remove="Migrations\20190504180709_WeeklyQuestionnaireTable.Designer.cs" />
+    <Compile Remove="Migrations\20190512142631_PatientHasDoctor.cs" />
+    <Compile Remove="Migrations\20190512142631_PatientHasDoctor.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

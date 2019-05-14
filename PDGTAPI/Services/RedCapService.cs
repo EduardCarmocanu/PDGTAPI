@@ -146,7 +146,7 @@ namespace PDGTAPI.Services
 					StartWeek = TimeRange.StartWeek,
 					EndWeek = TimeRange.EndWeek,
 					RedCapIdentifier = TimeRange.RedCapIdentifier,
-					RandomisationGroup = RandomisationGroup.GroupName
+					RandomisationGroup = RandomisationGroup
 				}).ToList().First();
 
 			string identifier = "";
@@ -190,7 +190,7 @@ namespace PDGTAPI.Services
 
 			string key;
 
-			switch (timeRange.RandomisationGroup)
+			switch (timeRange.RandomisationGroup.GroupName)
 			{
 				case Groups.Intervention:
 					postObject.Add("log_fatigue" + identifier, sessionQuestionnaire.PostQuestionnaire.Tired ? 1 : 0);

@@ -32,20 +32,6 @@ namespace PDGTAPI.Controllers
 		}
 
 		[HttpPost]
-		[Route("authenticate")]
-		[AllowAnonymous]
-		public async Task<IActionResult> AuthenticateAsync([FromBody] UserLogin model)
-		{
-			if (!ModelState.IsValid) return BadRequest(ModelState);
-
-			ServiceResult<string> authenticationResult = await _usersService.AuthenticateAsync(model);
-			if (!authenticationResult.Succeded)
-				return Unauthorized();
-
-			return Ok(authenticationResult.Content);
-		}
-
-		[HttpPost]
 		[Route("register/doctor")]
 		[Authorize(Policy = "Administrators")]
 		public async Task<IActionResult> RegisterPhysiotherapistAsync([FromBody] DoctorRegistration model)
@@ -53,19 +39,6 @@ namespace PDGTAPI.Controllers
 			if (!ModelState.IsValid) return BadRequest(ModelState);
 
 			ServiceResult<string> registrationResult = await _usersService.RegisterPhysiotherapistAsync(model);
-			if (!registrationResult.Succeded)
-				return BadRequest(registrationResult.ErrorMessage);
-
-			return Ok();
-		}
-
-		[HttpPost]
-		[Route("register/patient")]
-		public async Task<IActionResult> RegisterPatientAsync([FromBody] PatientRegistration model)
-		{
-			if (!ModelState.IsValid) return BadRequest(ModelState);
-
-			ServiceResult<string> registrationResult = await _usersService.RegisterPatientAsync(model);
 			if (!registrationResult.Succeded)
 				return BadRequest(registrationResult.ErrorMessage);
 
