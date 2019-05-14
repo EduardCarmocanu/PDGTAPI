@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using PDGTAPI.Helpers;
 using PDGTAPI.Models;
 using PDGTAPI.Services;
@@ -33,7 +34,7 @@ namespace PDGTAPI.Controllers
 			if (!authenticationResult.Succeded)
 				return Unauthorized();
 
-			return Ok(authenticationResult.Content);
+			return Ok(JsonConvert.SerializeObject(authenticationResult.Content));
 		}
 	}
 }
