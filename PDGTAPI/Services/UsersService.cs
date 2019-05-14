@@ -96,7 +96,10 @@ namespace PDGTAPI.Services
 				return result;
 			}
 
-			result.ErrorMessage = "Could not register Doctor";
+			foreach (var error in identityResult.Errors)
+			{
+				result.ErrorMessage = error.Description + "\n\r";
+			}
 			return result;
 		}
 
